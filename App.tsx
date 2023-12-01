@@ -17,7 +17,7 @@ const DrawerNavigation = () => {
         name="Home"
         component={Home}
         options={{
-          title: 'Add a new Budget item'
+          title: 'Home'
         }}
       />
     </Drawer.Navigator>
@@ -37,11 +37,4 @@ export default function App() {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
+const styles = StyleSheet.create({})

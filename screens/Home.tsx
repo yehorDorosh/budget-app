@@ -1,11 +1,13 @@
-import { View, Text } from "react-native";
+import { View, Text } from 'react-native'
+import ScreenStyles from '../styles/ScreenStyles'
+import LoginForm from '../components/auth/LoginForm/LoginForm'
 
 const Home = () => {
   return (
-    <View>
-      <Text>Home</Text>
+    <View style={ScreenStyles.screen}>
+      <LoginForm />
     </View>
   )
 }
 
-export default Home;
+export default Home
