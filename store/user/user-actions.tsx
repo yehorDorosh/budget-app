@@ -12,7 +12,6 @@ export const login = ({ email, password }: { email: string; password: string }) 
       const { data, status } = await axios.post<ApiRes<LoginPayload>>(`${api}/api/user/login`, { email, password })
       if (data.payload && data.payload.user) {
         dispatch(userActions.setUserData(data.payload.user))
-        dispatch(userActions.login())
       }
       return { data, status }
     } catch (err) {
