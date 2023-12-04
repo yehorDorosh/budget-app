@@ -4,10 +4,11 @@ import ShadowStyles from '../../styles/ShadowStyles'
 
 interface Props {
   children: React.ReactNode
+  style?: object
 }
 
-const BaseCard: FC<Props> = ({ children }) => {
-  return <View style={[styles.card]}>{children}</View>
+const BaseCard: FC<Props> = ({ children, style }) => {
+  return <View style={[styles.card, style]}>{children}</View>
 }
 
 const styles = StyleSheet.create({

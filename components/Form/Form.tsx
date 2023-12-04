@@ -1,5 +1,5 @@
 import { FC, useReducer, Reducer, useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TextInputProps, Alert } from 'react-native'
+import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
@@ -20,6 +20,8 @@ interface FormState {
   formIsValid: boolean
   formIsTouched: boolean
   formIsSubmitted: boolean
+  isLoading?: boolean
+  errMsg?: string
 }
 
 interface FieldConfig {
@@ -33,12 +35,17 @@ interface FieldConfig {
 
 interface FormConfig {
   submitText: string
-  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string }, status: number | null}>
+  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string }; status: number | null }>
   errMsg?: string
 }
 
 type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' } | { type: 'CLEAR' }
-type FormAction = { type: 'SUBMITTING'; fields: FieldState[] } | { type: 'TOUCHED' } | { type: 'RESET' }
+type FormAction =
+  | { type: 'SUBMITTING'; fields: FieldState[] }
+  | { type: 'TOUCHED' }
+  | { type: 'RESET' }
+  | { type: 'ERR_MSG'; errMsg: string }
+  | { type: 'LOADING'; isLoading: boolean }
 
 interface Props {
   fieldsConfig: FieldConfig[]
@@ -90,7 +97,18 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
     case 'RESET':
       return {
         ...state,
-        formIsSubmitted: false
+        formIsSubmitted: false,
+        errMsg: undefined
+      }
+    case 'ERR_MSG':
+      return {
+        ...state,
+        errMsg: action.errMsg
+      }
+    case 'LOADING':
+      return {
+        ...state,
+        isLoading: action.isLoading
       }
     default:
       return state
@@ -113,9 +131,9 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   const [form, dispatchForm] = useReducer(reducerForm, {
     formIsValid: true,
     formIsTouched: false,
-    formIsSubmitted: false
+    formIsSubmitted: false,
+    isLoading: false
   })
-  const [formError, setFormError] = useState<string | undefined>()
 
   const inputHandler = (id: string, value: string) => {
     dispatchForm({ type: 'TOUCHED' })
@@ -130,23 +148,29 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   useEffect(() => {
     if (form.formIsValid && form.formIsTouched && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
+      dispatchForm({ type: 'LOADING', isLoading: true })
       formConfig.onSubmit(...fields).then((res) => {
+        dispatchForm({ type: 'LOADING', isLoading: false })
         if (res.status === 422) {
-          setFormError('Server validation error')
+          dispatchForm({ type: 'ERR_MSG', errMsg: 'Server validation error' })
         } else if (res.status === null && res.data && res.data.errMsg) {
           Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
         } else if (res.status !== 401) {
           dispatchFields({ type: 'CLEAR' })
         }
       })
-      
     }
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
   return (
-    <BaseCard>
+    <BaseCard style={styles.form}>
+      {form.isLoading && (
+        <View style={styles.overlay}>
+          <ActivityIndicator style={styles.spinner} size="large" color="black" />
+        </View>
+      )}
       {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
-      {formError && <Text style={styles.error}>{formError}</Text>}
+      {form.errMsg && <Text style={styles.error}>{form.errMsg}</Text>}
       {fields.map((field) => (
         <BaseInput
           key={field.id}
@@ -164,6 +188,23 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
 }
 
 const styles = StyleSheet.create({
+  form: {
+    position: 'relative'
+  },
+  spinner: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 2
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    zIndex: 1,
+    borderRadius: 8
+  },
   error: {
     color: 'red',
     marginBottom: 8
