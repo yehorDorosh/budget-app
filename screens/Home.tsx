@@ -9,6 +9,7 @@ const Home = () => {
   return (
     <View style={ScreenStyles.screen}>
       {user && <Text>{user.email}</Text>}
+      {user && <Text>{user.token}</Text>}
       <LoginForm />
     </View>
   )

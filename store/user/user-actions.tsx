@@ -2,6 +2,7 @@ import axios from 'axios'
 import { userActions } from './user-slice'
 import { RootState, AppDispatch } from '..'
 import { ApiRes, LoginPayload } from '../../types/api'
+import { actionErrorHandler } from '../../utils/errors'
 
 export const login = ({ email, password }: { email: string; password: string }) => {
   return async (dispatch: AppDispatch, getState: () => RootState) => {
@@ -13,8 +14,7 @@ export const login = ({ email, password }: { email: string; password: string }) 
       }
       return { data, status }
     } catch (err) {
-      console.log(err)
-      return err
+      return actionErrorHandler(err)
     }
   }
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
 import { emailValidator, passwordValidator } from '../../../utils/validators'
@@ -7,9 +8,17 @@ import { FieldState } from '../../Form/Form'
 
 const LoginForm = () => {
   const dispatch = useAppDispatch()
+  const [formError, setFormError] = useState<string | undefined>()
 
-  const onSubmitHandler = (...fields: FieldState[]) => {
-    dispatch(login({ email: fields[0].value, password: fields[1].value }))
+  const onSubmitHandler = async (...fields: FieldState[]) => {
+    const res = await dispatch(login({ email: fields[0].value, password: fields[1].value }))
+    if (res.status === 401) {
+      setFormError('Invalid email or password')
+    } else if (res.status === 200) {
+      console.log('Login success')
+    }
+
+    return res
   }
 
   return (
@@ -32,7 +41,8 @@ const LoginForm = () => {
       ]}
       formConfig={{
         submitText: 'Login',
-        onSubmit: onSubmitHandler
+        onSubmit: onSubmitHandler,
+        errMsg: formError
       }}
     />
   )

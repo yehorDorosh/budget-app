@@ -1,5 +1,5 @@
 import { FC, useReducer, Reducer, useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TextInputProps } from 'react-native'
+import { View, Text, StyleSheet, TextInputProps, Alert } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
@@ -33,7 +33,8 @@ interface FieldConfig {
 
 interface FormConfig {
   submitText: string
-  onSubmit: (...args: FieldState[]) => void
+  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string }, status: number | null}>
+  errMsg?: string
 }
 
 type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' }
@@ -107,6 +108,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     formIsTouched: false,
     formIsSubmitted: false
   })
+  const [formError, setFormError] = useState<string | undefined>()
 
   const inputHandler = (id: string, value: string) => {
     dispatchForm({ type: 'TOUCHED' })
@@ -121,12 +123,21 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   useEffect(() => {
     if (form.formIsValid && form.formIsTouched && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
-      formConfig.onSubmit(...fields)
+      formConfig.onSubmit(...fields).then((res) => {
+        if (res.status === 422) {
+          setFormError('Server validation error')
+        } else if (res.status === null && res.data && res.data.errMsg) {
+          Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
+        }
+      })
+      
     }
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
   return (
     <BaseCard>
+      {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
+      {formError && <Text style={styles.error}>{formError}</Text>}
       {fields.map((field) => (
         <BaseInput
           key={field.id}
@@ -143,6 +154,11 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  error: {
+    color: 'red',
+    marginBottom: 8
+  }
+})
 
 export default Form
