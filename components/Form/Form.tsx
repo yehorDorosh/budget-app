@@ -4,7 +4,7 @@ import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
 
-interface FieldState {
+export interface FieldState {
   id: string
   value: string
   isValid: boolean
@@ -33,7 +33,7 @@ interface FieldConfig {
 
 interface FormConfig {
   submitText: string
-  onSubmit: () => void
+  onSubmit: (...args: FieldState[]) => void
 }
 
 type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' }
@@ -121,7 +121,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   useEffect(() => {
     if (form.formIsValid && form.formIsTouched && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
-      formConfig.onSubmit()
+      formConfig.onSubmit(...fields)
     }
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
