@@ -18,9 +18,15 @@ const LoginForm = () => {
           label: 'Password',
           errMsg: 'Password is required',
           validator: passwordValidator,
-          attrs: { autoCapitalize: 'none' }
+          attrs: { autoCapitalize: 'none', secureTextEntry: true, autoCorrect: false }
         }
       ]}
+      formConfig={{
+        submitText: 'Login',
+        onSubmit: () => {
+          console.log('Login')
+        }
+      }}
     />
   )
 }

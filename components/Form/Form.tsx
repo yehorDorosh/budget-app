@@ -16,6 +16,12 @@ interface FieldState {
   validator?: (value: string) => boolean
 }
 
+interface FormState {
+  formIsValid: boolean
+  formIsTouched: boolean
+  formIsSubmitted: boolean
+}
+
 interface FieldConfig {
   id: string
   label?: string
@@ -25,10 +31,17 @@ interface FieldConfig {
   validator?: (value: string) => boolean
 }
 
+interface FormConfig {
+  submitText: string
+  onSubmit: () => void
+}
+
 type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' }
+type FormAction = { type: 'SUBMITTING'; fields: FieldState[] } | { type: 'TOUCHED' } | { type: 'RESET' }
 
 interface Props {
   fieldsConfig: FieldConfig[]
+  formConfig: FormConfig
 }
 
 const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
@@ -53,7 +66,30 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
   }
 }
 
-const Form: FC<Props> = ({ fieldsConfig }) => {
+const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
+  switch (action.type) {
+    case 'SUBMITTING':
+      return {
+        ...state,
+        formIsValid: action.fields.every((field) => field.isValid),
+        formIsSubmitted: true
+      }
+    case 'TOUCHED':
+      return {
+        ...state,
+        formIsTouched: true
+      }
+    case 'RESET':
+      return {
+        ...state,
+        formIsSubmitted: false
+      }
+    default:
+      return state
+  }
+}
+
+const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   const defaultFields: FieldState[] = fieldsConfig.map((field) => ({
     id: field.id,
     value: field.defaultValue || '',
@@ -66,11 +102,28 @@ const Form: FC<Props> = ({ fieldsConfig }) => {
   }))
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)
-  const [formIsValid, setFormIsValid] = useState(true)
+  const [form, dispatchForm] = useReducer(reducerForm, {
+    formIsValid: true,
+    formIsTouched: false,
+    formIsSubmitted: false
+  })
+
+  const inputHandler = (id: string, value: string) => {
+    dispatchForm({ type: 'TOUCHED' })
+    dispatchFields({ type: 'CHANGE', id, value })
+  }
 
   const submitHandler = () => {
     dispatchFields({ type: 'CHECK-ALL' })
+    dispatchForm({ type: 'SUBMITTING', fields })
   }
+
+  useEffect(() => {
+    if (form.formIsValid && form.formIsTouched && form.formIsSubmitted) {
+      dispatchForm({ type: 'RESET' })
+      formConfig.onSubmit()
+    }
+  }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
   return (
     <BaseCard>
@@ -81,13 +134,11 @@ const Form: FC<Props> = ({ fieldsConfig }) => {
           isValid={field.isValid}
           errMsg={field.errMsg}
           value={field.value}
-          onChangeText={(value) => {
-            dispatchFields({ type: 'CHANGE', id: field.id, value })
-          }}
+          onChangeText={inputHandler.bind(null, field.id)}
           {...field.attrs}
         />
       ))}
-      <BaseButton onPress={submitHandler}>Submit</BaseButton>
+      <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>
     </BaseCard>
   )
 }
