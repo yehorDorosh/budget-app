@@ -52,7 +52,7 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
     case 'CHANGE':
       const index = state.findIndex((field) => field.id === action.id)
       const field = state[index]
-      field.value = action.value
+      field.value = action.value.trim()
       field.isTouched = true
       field.isValid = field.validator ? field.validator(action.value) : true
       prevFields[index] = field
