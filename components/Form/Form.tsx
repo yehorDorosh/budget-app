@@ -37,7 +37,7 @@ interface FormConfig {
   errMsg?: string
 }
 
-type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' }
+type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' } | { type: 'CLEAR' }
 type FormAction = { type: 'SUBMITTING'; fields: FieldState[] } | { type: 'TOUCHED' } | { type: 'RESET' }
 
 interface Props {
@@ -60,6 +60,13 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
     case 'CHECK-ALL':
       return state.map((field) => {
         field.isValid = field.validator ? field.validator(field.value) : true
+        return field
+      })
+    case 'CLEAR':
+      return state.map((field) => {
+        field.value = ''
+        field.isValid = true
+        field.isTouched = false
         return field
       })
     default:
@@ -128,6 +135,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
           setFormError('Server validation error')
         } else if (res.status === null && res.data && res.data.errMsg) {
           Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
+        } else if (res.status !== 401) {
+          dispatchFields({ type: 'CLEAR' })
         }
       })
       
