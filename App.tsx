@@ -8,13 +8,18 @@ import { createDrawerNavigator } from '@react-navigation/drawer'
 import Home from './screens/Home'
 import { Provider } from 'react-redux'
 import store from './store'
+import LogOutButton from './components/layout/header/LogOutButton'
 
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
 
 const DrawerNavigation = () => {
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+      screenOptions={{
+        headerRight: ({ tintColor }) => <LogOutButton tintColor={tintColor} />
+      }}
+    >
       <Drawer.Screen
         name="Home"
         component={Home}
