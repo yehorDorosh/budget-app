@@ -20,3 +20,16 @@ export const login = ({ email, password }: { email: string; password: string }) 
   }
 }
 
+export const signUp = ({ email, password }: { email: string; password: string }) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.post<ApiRes<LoginPayload>>(`${api}/api/user/signup--`, { email, password })
+      if (data.payload && data.payload.user) {
+        dispatch(userActions.setUserData(data.payload.user))
+      }
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}

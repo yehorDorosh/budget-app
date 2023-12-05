@@ -14,7 +14,8 @@ export interface FieldState {
   errMsg?: string
   defaultValue?: string
   attrs?: TextInputProps
-  validator?: (value: string) => boolean
+  validator?: (value: string, matchValue?: string) => boolean
+  matchValidatorConfig?: { id: string }
 }
 
 interface FormState {
@@ -31,7 +32,8 @@ interface FieldConfig {
   defaultValue?: string
   errMsg?: string
   attrs?: TextInputProps
-  validator?: (value: string) => boolean
+  validator?: (value: string, matchValue?: string) => boolean
+  matchValidatorConfig?: { id: string }
 }
 
 interface FormConfig {
@@ -62,12 +64,14 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       const field = state[index]
       field.value = action.value.trim()
       field.isTouched = true
-      field.isValid = field.validator ? field.validator(action.value) : true
+      const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
+      field.isValid = field.validator ? field.validator(action.value, matchValue) : true
       prevFields[index] = field
       return prevFields
     case 'CHECK-ALL':
       return state.map((field) => {
-        field.isValid = field.validator ? field.validator(field.value) : true
+        const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
+        field.isValid = field.validator ? field.validator(field.value, matchValue) : true
         return field
       })
     case 'CLEAR':
@@ -125,7 +129,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     label: field.label,
     errMsg: field.errMsg,
     attrs: field.attrs,
-    validator: field.validator
+    validator: field.validator,
+    matchValidatorConfig: field.matchValidatorConfig
   }))
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)

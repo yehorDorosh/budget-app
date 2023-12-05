@@ -5,33 +5,47 @@ import ShadowStyles from '../../styles/ShadowStyles'
 interface Props {
   children: React.ReactNode
   onPress: () => void
+  mode?: 'link' | 'button'
+  active?: boolean
 }
 
-const Button: FC<Props> = ({ children, onPress }) => {
+const BaseButton: FC<Props> = ({ children, onPress, mode = 'button', active = false }) => {
   return (
-    <Pressable style={({ pressed }) => [styles.button, ShadowStyles.shadow, pressed && styles.pressed]} onPress={onPress}>
+    <Pressable style={({ pressed }) => [styles[mode], pressed && styles.pressed]} onPress={onPress}>
       <View>
-        <Text style={styles.label}>{children}</Text>
+        <Text style={[styles.label, mode === 'button' ? styles.labelButton : styles.labelLink, active && styles.activeLink]}>
+          {children}
+        </Text>
       </View>
     </Pressable>
   )
 }
 
-export default Button
+export default BaseButton
 
 const styles = StyleSheet.create({
   button: {
+    ...ShadowStyles.shadow,
     borderRadius: 8,
     padding: 16,
     backgroundColor: '#000'
   },
+  link: {},
   pressed: {
     opacity: 0.7
   },
   label: {
     textAlign: 'center',
-    color: '#fff',
     fontSize: 24,
     fontWeight: 'bold'
+  },
+  labelButton: {
+    color: '#fff'
+  },
+  labelLink: {
+    color: '#000'
+  },
+  activeLink: {
+    textDecorationLine: 'underline'
   }
 })
