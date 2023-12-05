@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export interface UserState {
   id: number | null
@@ -21,10 +22,13 @@ const userSlice = createSlice({
     setUserData(state, action: PayloadAction<{ id: string; email: string; token: string }>) {
       state.id = +action.payload.id
       state.email = action.payload.email
-      if (action.payload.token) state.token = action.payload.token
+      if (action.payload.token) {
+        state.token = action.payload.token
+        AsyncStorage.setItem('user-token', action.payload.token)
+      }
     },
     logout(state) {
-      localStorage.removeItem('token')
+      AsyncStorage.removeItem('user-token')
       state.id = null
       state.email = null
       state.token = null
