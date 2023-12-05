@@ -3,6 +3,8 @@ import { userActions } from './user-slice'
 import { RootState, AppDispatch } from '..'
 import { ApiRes, LoginPayload } from '../../types/api'
 import { actionErrorHandler } from '../../utils/errors'
+import { jwtDecode } from 'jwt-decode'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const api = process.env.EXPO_PUBLIC_API_URL
 
@@ -23,9 +25,47 @@ export const login = ({ email, password }: { email: string; password: string }) 
 export const signUp = ({ email, password }: { email: string; password: string }) => {
   return async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
-      const { data, status } = await axios.post<ApiRes<LoginPayload>>(`${api}/api/user/signup--`, { email, password })
+      const { data, status } = await axios.post<ApiRes<LoginPayload>>(`${api}/api/user/signup`, { email, password })
       if (data.payload && data.payload.user) {
         dispatch(userActions.setUserData(data.payload.user))
+      }
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
+
+export const autoLoginAutoLogout = () => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    const isLogin = getState().user.token
+    if (isLogin) return
+
+    const token = await AsyncStorage.getItem('user-token')
+    if (!token) return dispatch(userActions.logout())
+
+    const autoLogoutTimer = getState().user.autoLogoutTimer
+    const { exp: expiryDate } = jwtDecode(token)
+
+    if (!autoLogoutTimer && expiryDate) {
+      dispatch(
+        userActions.setAutoLogoutTimer(
+          setInterval(() => {
+            // console.log(expiryDate! - Date.now() / 1000)
+            if (Date.now() >= expiryDate * 1000) {
+              dispatch(userActions.logout())
+            }
+          }, 1000)
+        )
+      )
+    }
+
+    try {
+      const { data, status } = await axios.get<ApiRes<LoginPayload>>(`${api}/api/user/get-user`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (data.payload && data.payload.user) {
+        dispatch(userActions.setUserData({ ...data.payload.user, token }))
       }
       return { data, status }
     } catch (err) {

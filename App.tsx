@@ -9,6 +9,15 @@ import Home from './screens/Home'
 import { Provider } from 'react-redux'
 import store from './store'
 import LogOutButton from './components/layout/header/LogOutButton'
+import { decode, encode } from 'base-64'
+
+if (!global.btoa) {
+  global.btoa = encode
+}
+
+if (!global.atob) {
+  global.atob = decode
+}
 
 const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
