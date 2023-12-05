@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
-import { emailValidator, passwordValidator } from '../../../utils/validators'
+import { notEmptyValidator } from '../../../utils/validators'
 import { useAppDispatch } from '../../../hooks/useReduxTS'
 import { login } from '../../../store/user/user-actions'
 import { FieldState } from '../../Form/Form'
@@ -28,15 +28,15 @@ const LoginForm = () => {
         {
           id: 'email',
           label: 'Email',
-          errMsg: 'Password is required',
-          validator: emailValidator,
+          errMsg: 'Email is required',
+          validator: notEmptyValidator,
           attrs: { autoCapitalize: 'none' }
         },
         {
           id: 'password',
           label: 'Password',
           errMsg: 'Password is required',
-          validator: passwordValidator,
+          validator: notEmptyValidator,
           attrs: { autoCapitalize: 'none', secureTextEntry: true, autoCorrect: false }
         }
       ]}

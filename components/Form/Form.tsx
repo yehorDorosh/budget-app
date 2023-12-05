@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator } from
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
+import { ValidationError } from '../../types/api'
 
 export interface FieldState {
   id: string
@@ -35,7 +36,7 @@ interface FieldConfig {
 
 interface FormConfig {
   submitText: string
-  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string }; status: number | null }>
+  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string; validationErrors?: ValidationError[] }; status: number | null }>
   errMsg?: string
 }
 
@@ -86,7 +87,7 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
     case 'SUBMITTING':
       return {
         ...state,
-        formIsValid: action.fields.every((field) => field.isValid),
+        formIsValid: action.fields.every((field) => (field.validator ? field.isValid : true)),
         formIsSubmitted: true
       }
     case 'TOUCHED':
@@ -146,13 +147,20 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   }
 
   useEffect(() => {
-    if (form.formIsValid && form.formIsTouched && form.formIsSubmitted) {
+    const formValidationOn = fields.some((field) => !!field.validator)
+
+    if (form.formIsValid && (form.formIsTouched || !formValidationOn) && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
       dispatchForm({ type: 'LOADING', isLoading: true })
+
       formConfig.onSubmit(...fields).then((res) => {
         dispatchForm({ type: 'LOADING', isLoading: false })
+
         if (res.status === 422) {
-          dispatchForm({ type: 'ERR_MSG', errMsg: 'Server validation error' })
+          const errMsg = res.data.validationErrors
+            ? res.data.validationErrors.map((err) => `${err.path} ${err.msg}`).join('\n')
+            : 'Server validation error'
+          dispatchForm({ type: 'ERR_MSG', errMsg })
         } else if (res.status === null && res.data && res.data.errMsg) {
           Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
         } else if (res.status !== 401) {
