@@ -8,7 +8,7 @@ export interface ValidationError {
   value: string
 }
 
-export interface ApiRes<T> {
+export interface ApiRes<T = void> {
   message: string
   code: ResCodes
   payload?: T

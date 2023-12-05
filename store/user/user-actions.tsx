@@ -73,3 +73,45 @@ export const autoLoginAutoLogout = () => {
     }
   }
 }
+
+export const updateUser = ({ token, payload }: { token: string; payload: { email?: string; password?: string } }) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const { data, status } = await axios.put<ApiRes<LoginPayload>>(`${api}/api/user/update-user`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (data.payload && data.payload.user) {
+        dispatch(userActions.setUserData(data.payload.user))
+      }
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
+
+export const restorePassword = ({ token, password }: { token: string; password: string }) => {
+  return async () => {
+    try {
+      const { data, status } = await axios.post<ApiRes>(`${api}/api/user/restore-password/${token}`, { password })
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
+
+export const deleteUser = ({ token, password }: { token: string; password: string }) => {
+  return async () => {
+    try {
+      const { data, status } = await axios.patch<ApiRes>(
+        `${api}/api/user/delete-user`,
+        { password },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}

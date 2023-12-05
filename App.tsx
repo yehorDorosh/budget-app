@@ -10,6 +10,7 @@ import { Provider } from 'react-redux'
 import store from './store'
 import LogOutButton from './components/layout/header/LogOutButton'
 import { decode, encode } from 'base-64'
+import Profile from './screens/Profile'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -34,6 +35,13 @@ const DrawerNavigation = () => {
         component={Home}
         options={{
           title: 'Home'
+        }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          title: 'Profile'
         }}
       />
     </Drawer.Navigator>
