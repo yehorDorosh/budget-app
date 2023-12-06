@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
@@ -12,6 +12,7 @@ import LogOutButton from './components/layout/header/LogOutButton'
 import { decode, encode } from 'base-64'
 import Profile from './screens/Profile'
 import { useAppSelector } from './hooks/useReduxTS'
+import SendRestorePasswordEmail from './screens/SendRestorePasswordEmail'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -61,6 +62,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} options={{ headerShown: false }} />
+            <Stack.Screen name="SendRestorePasswordEmail" component={SendRestorePasswordEmail} options={{ title: 'Restore password' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>

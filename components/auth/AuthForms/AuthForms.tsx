@@ -3,9 +3,12 @@ import LoginForm from '../LoginForm/LoginForm'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import BaseButton from '../../ui/BaseButton'
 import { useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { SendRestorePasswordEmailScreenNavigationProp } from '../../../types/navigation'
 
 const AuthForms = () => {
   const [activeForm, setActiveForm] = useState<'login' | 'signup'>('login')
+  const navigation = useNavigation<SendRestorePasswordEmailScreenNavigationProp>()
 
   return (
     <View>
@@ -20,6 +23,12 @@ const AuthForms = () => {
       </View>
       {activeForm === 'login' && <LoginForm />}
       {activeForm === 'signup' && <SignUpForm />}
+      <Text
+        style={{ textAlign: 'center', textDecorationLine: 'underline' }}
+        onPress={() => navigation.navigate('SendRestorePasswordEmail')}
+      >
+        Forgot password?
+      </Text>
     </View>
   )
 }
