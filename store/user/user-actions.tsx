@@ -115,3 +115,14 @@ export const deleteUser = ({ token, password }: { token: string; password: strin
     }
   }
 }
+
+export const getRestoreEmail = ({ email }: { email: string }) => {
+  return async () => {
+    try {
+      const { data, status } = await axios.post<ApiRes>(`${api}/api/user/restore-password`, { email })
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
