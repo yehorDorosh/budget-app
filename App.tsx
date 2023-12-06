@@ -13,6 +13,7 @@ import { decode, encode } from 'base-64'
 import Profile from './screens/Profile'
 import { useAppSelector } from './hooks/useReduxTS'
 import SendRestorePasswordEmail from './screens/SendRestorePasswordEmail'
+import Budget from './screens/Budget'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -47,6 +48,15 @@ const DrawerNavigation = () => {
           component={Profile}
           options={{
             title: 'Profile'
+          }}
+        />
+      )}
+      {token && (
+        <Drawer.Screen
+          name="Budget"
+          component={Budget}
+          options={{
+            title: 'Budget'
           }}
         />
       )}

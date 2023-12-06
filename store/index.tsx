@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit'
 import userSlice from './user/user-slice'
+import budgetSlice from './budget/budget-item-slice'
 
 const rootSlice = createSlice({
   name: 'root',
@@ -10,7 +11,8 @@ const rootSlice = createSlice({
 const store = configureStore({
   reducer: {
     root: rootSlice.reducer,
-    user: userSlice
+    user: userSlice,
+    budgetItem: budgetSlice
   }
 })
 

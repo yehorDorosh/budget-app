@@ -12,6 +12,8 @@ const useRouteGuard = () => {
       navigation.navigate('Home')
     }
   }, [token])
+
+  return token
 }
 
 export default useRouteGuard
