@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, View } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import store from './store'
 import LogOutButton from './components/layout/header/LogOutButton'
 import { decode, encode } from 'base-64'
 import Profile from './screens/Profile'
+import { useAppSelector } from './hooks/useReduxTS'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -24,6 +25,8 @@ const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator()
 
 const DrawerNavigation = () => {
+  const token = useAppSelector((state) => state.user.token)
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -37,13 +40,15 @@ const DrawerNavigation = () => {
           title: 'Home'
         }}
       />
-      <Drawer.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          title: 'Profile'
-        }}
-      />
+      {token && (
+        <Drawer.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            title: 'Profile'
+          }}
+        />
+      )}
     </Drawer.Navigator>
   )
 }

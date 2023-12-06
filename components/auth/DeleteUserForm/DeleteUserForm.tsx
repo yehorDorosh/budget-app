@@ -1,24 +1,15 @@
-import { useState, useEffect } from 'react'
 import { StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { deleteUser } from '../../../store/user/user-actions'
 import { notEmptyValidator } from '../../../utils/validators'
 import { FieldState } from '../../Form/Form'
-import { useNavigation } from '@react-navigation/native'
-import { HomeScreenNavigationProp } from '../../../types/navigation'
 import { userActions } from '../../../store/user/user-slice'
 
 const DeleteUserForm = () => {
   const dispatch = useAppDispatch()
-  const navigation = useNavigation<HomeScreenNavigationProp>()
-  const token = useAppSelector((state) => state.user.token)
-  const [userSuccessfullyDeleted, setUserSuccessfullyDeleted] = useState(false)
 
-  if (!token) {
-    navigation.navigate('Home')
-    return null
-  }
+  const token = useAppSelector((state) => state.user.token)!
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
     const res = await dispatch(deleteUser({ token, password: fields[0].value }))
@@ -27,12 +18,6 @@ const DeleteUserForm = () => {
     }
     return res
   }
-
-  useEffect(() => {
-    if (userSuccessfullyDeleted) {
-      navigation.navigate('Home')
-    }
-  }, [userSuccessfullyDeleted])
 
   return (
     <Form

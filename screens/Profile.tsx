@@ -6,10 +6,13 @@ import ChangeEmailForm from '../components/auth/ChangeEmailForm/ChangeEmailForm'
 import ChangePasswordForm from '../components/auth/ChangePasswordForm/ChangePasswordForm'
 import DeleteUserForm from '../components/auth/DeleteUserForm/DeleteUserForm'
 import BaseButton from '../components/ui/BaseButton'
+import useRouteGuard from '../hooks/useRouteGuard'
 
 const Profile = () => {
   const user = useAppSelector((state) => state.user)
   const [activeForm, setActiveForm] = useState<'email' | 'password' | 'delete' | null>(null)
+  useRouteGuard()
+
   return (
     <View style={ScreenStyles.screen}>
       <Text>
