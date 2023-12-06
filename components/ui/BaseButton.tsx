@@ -7,13 +7,22 @@ interface Props {
   onPress: () => void
   mode?: 'link' | 'button'
   active?: boolean
+  style?: {}[]
 }
 
-const BaseButton: FC<Props> = ({ children, onPress, mode = 'button', active = false }) => {
+const BaseButton: FC<Props> = ({ children, onPress, mode = 'button', active = false, style = [] }) => {
   return (
-    <Pressable style={({ pressed }) => [styles[mode], pressed && styles.pressed]} onPress={onPress}>
+    <Pressable
+      style={({ pressed }) => [styles[mode], pressed && styles.pressed, active && mode === 'button' && styles.activeButton, ...style]}
+      onPress={onPress}
+    >
       <View>
-        <Text style={[styles.label, mode === 'button' ? styles.labelButton : styles.labelLink, active && styles.activeLink]}>
+        <Text
+          style={[
+            styles.label,
+            mode === 'button' ? [styles.labelButton, active && styles.activeText] : [styles.labelLink, active && styles.activeLink]
+          ]}
+        >
           {children}
         </Text>
       </View>
@@ -47,5 +56,13 @@ const styles = StyleSheet.create({
   },
   activeLink: {
     textDecorationLine: 'underline'
+  },
+  activeButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#000'
+  },
+  activeText: {
+    color: '#000'
   }
 })

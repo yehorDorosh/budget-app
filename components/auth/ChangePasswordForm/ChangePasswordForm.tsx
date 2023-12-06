@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet, Alert } from 'react-native'
 import Form from '../../Form/Form'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { updateUser } from '../../../store/user/user-actions'
@@ -19,6 +19,9 @@ const ChangePasswordForm = () => {
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
     const res = await dispatch(updateUser({ token, payload: { password: fields[0].value } }))
+    if (res.status === 200) {
+      Alert.alert('Success', 'Password changed successfully')
+    }
     return res
   }
 

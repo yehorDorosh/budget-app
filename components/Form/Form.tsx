@@ -202,7 +202,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
 
 const styles = StyleSheet.create({
   form: {
-    position: 'relative'
+    position: 'relative',
+    marginVertical: 8
   },
   spinner: {
     position: 'absolute',
