@@ -40,7 +40,7 @@ const SignUpForm = () => {
         }
       ]}
       formConfig={{
-        submitText: 'Sign In',
+        submitText: 'Sign Up',
         onSubmit: onSubmitHandler
       }}
     />

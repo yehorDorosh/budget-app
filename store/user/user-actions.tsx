@@ -15,6 +15,7 @@ export const login = ({ email, password }: { email: string; password: string }) 
       if (data.payload && data.payload.user) {
         dispatch(userActions.setUserData(data.payload.user))
       }
+      await dispatch(autoLoginAutoLogout())
       return { data, status }
     } catch (err) {
       return actionErrorHandler(err)
@@ -29,6 +30,7 @@ export const signUp = ({ email, password }: { email: string; password: string })
       if (data.payload && data.payload.user) {
         dispatch(userActions.setUserData(data.payload.user))
       }
+      await dispatch(autoLoginAutoLogout())
       return { data, status }
     } catch (err) {
       return actionErrorHandler(err)
@@ -38,14 +40,16 @@ export const signUp = ({ email, password }: { email: string; password: string })
 
 export const autoLoginAutoLogout = () => {
   return async (dispatch: AppDispatch, getState: () => RootState) => {
-    const isLogin = getState().user.token
-    if (isLogin) return
+    const user = getState().user
+    const autoLogoutTimer = user.autoLogoutTimer
+    const tokenFromStore = user.token
+    if (autoLogoutTimer) return
 
-    const token = await AsyncStorage.getItem('user-token')
+    const token = tokenFromStore ?? (await AsyncStorage.getItem('user-token'))
     if (!token) return dispatch(userActions.logout())
 
-    const autoLogoutTimer = getState().user.autoLogoutTimer
     const { exp: expiryDate } = jwtDecode(token)
+    // const { exp: expiryDate } = { exp: Date.now() / 1000 + 40 }
 
     if (!autoLogoutTimer && expiryDate) {
       dispatch(
@@ -60,16 +64,18 @@ export const autoLoginAutoLogout = () => {
       )
     }
 
-    try {
-      const { data, status } = await axios.get<ApiRes<LoginPayload>>(`${api}/api/user/get-user`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (data.payload && data.payload.user) {
-        dispatch(userActions.setUserData({ ...data.payload.user, token }))
+    if (!user.id || !user.email) {
+      try {
+        const { data, status } = await axios.get<ApiRes<LoginPayload>>(`${api}/api/user/get-user`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (data.payload && data.payload.user) {
+          dispatch(userActions.setUserData({ ...data.payload.user, token }))
+        }
+        return { data, status }
+      } catch (err) {
+        return actionErrorHandler(err)
       }
-      return { data, status }
-    } catch (err) {
-      return actionErrorHandler(err)
     }
   }
 }
