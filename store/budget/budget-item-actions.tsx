@@ -20,3 +20,16 @@ export const getBudgetItems = ({ token }: { token: string }) => {
     }
   }
 }
+
+export const deleteBudgetItem = ({ token, id }: { token: string; id: number }) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.delete<ApiRes>(`${api}/api/budget/delete-budget-item?id=${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
