@@ -5,7 +5,7 @@ import ShadowStyles from '../../styles/ShadowStyles'
 interface Props {
   children: React.ReactNode
   onPress: () => void
-  mode?: 'link' | 'button'
+  mode?: 'link' | 'button' | 'smallBtn'
   active?: boolean
   style?: {}[]
 }
@@ -13,14 +13,21 @@ interface Props {
 const BaseButton: FC<Props> = ({ children, onPress, mode = 'button', active = false, style = [] }) => {
   return (
     <Pressable
-      style={({ pressed }) => [styles[mode], pressed && styles.pressed, active && mode === 'button' && styles.activeButton, ...style]}
+      style={({ pressed }) => [
+        styles[mode],
+        pressed && styles.pressed,
+        active && (mode === 'button' || mode === 'smallBtn') && styles.activeButton,
+        ...style
+      ]}
       onPress={onPress}
     >
       <View>
         <Text
           style={[
             styles.label,
-            mode === 'button' ? [styles.labelButton, active && styles.activeText] : [styles.labelLink, active && styles.activeLink]
+            mode === 'button' && [styles.labelButton, active && styles.activeText],
+            mode === 'link' && [styles.labelLink, active && styles.activeLink],
+            mode === 'smallBtn' && [styles.labelSmallBtn, active && styles.activeText]
           ]}
         >
           {children}
@@ -40,6 +47,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000'
   },
   link: {},
+  smallBtn: {
+    ...ShadowStyles.shadow,
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#000'
+  },
   pressed: {
     opacity: 0.7
   },
@@ -53,6 +66,10 @@ const styles = StyleSheet.create({
   },
   labelLink: {
     color: '#000'
+  },
+  labelSmallBtn: {
+    fontSize: 18,
+    color: '#fff'
   },
   activeLink: {
     textDecorationLine: 'underline'

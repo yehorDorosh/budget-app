@@ -8,7 +8,6 @@ const Budget = () => {
 
   return (
     <View style={ScreenStyles.screen}>
-      <Text>Budget</Text>
       <BudgetItemsList token={token} />
     </View>
   )

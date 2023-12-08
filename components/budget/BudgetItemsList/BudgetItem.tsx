@@ -1,5 +1,5 @@
 import React, { FC, Fragment, useState } from 'react'
-import { View, Text, StyleSheet, Modal } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useAppDispatch } from '../../../hooks/useReduxTS'
 import UpdateBudgetItemForm from '../UpdateBudgetItemForm/UpdateBudgetItemForm'
 import { BudgetItem } from '../../../store/budget/budget-item-slice'
@@ -7,6 +7,7 @@ import { deleteBudgetItem } from '../../../store/budget/budget-item-actions'
 import { CategoryType, ResCodes } from '../../../types/enums'
 import BaseCard from '../../ui/BaseCard'
 import BaseButton from '../../ui/BaseButton'
+import BaseModal from '../../ui/BaseModal'
 
 interface Props {
   token: string
@@ -38,26 +39,63 @@ const ListItem: FC<Props> = ({ budgetItem, token, onChange, onDelete }) => {
 
   return (
     <Fragment>
-      <Modal visible={openForm} onRequestClose={() => setOpenForm(false)} presentationStyle="formSheet">
+      <BaseModal open={openForm} onClose={() => setOpenForm(false)} title="Edit">
         <UpdateBudgetItemForm token={token} currentBudgetItem={budgetItem} onSave={onEditHandler} />
-      </Modal>
-      <BaseCard>
-        <View>
-          <Text>{budgetItem.name}</Text>
-          <View>
-            <Text>{budgetItem.value}</Text>
+      </BaseModal>
+      <BaseCard style={styles.card}>
+        <View style={styles.container}>
+          <Text style={styles.title}>{budgetItem.name}</Text>
+          <View style={styles.data}>
+            <Text style={styles.value}>{budgetItem.value}</Text>
             <Text>{budgetItem.userDate}</Text>
             <Text>{budgetItem.category.name}</Text>
             <Text>{budgetItem.category.categoryType === CategoryType.EXPENSE ? 'E' : 'I'}</Text>
           </View>
-          <View>
-            <BaseButton onPress={editBtnHandler}>Edit</BaseButton>
-            <BaseButton onPress={deleteHandler}>Delete</BaseButton>
+          <View style={styles.btns}>
+            <BaseButton mode="smallBtn" style={[styles.btn]} onPress={editBtnHandler}>
+              Edit
+            </BaseButton>
+            <BaseButton mode="smallBtn" style={[styles.btn]} onPress={deleteHandler}>
+              Delete
+            </BaseButton>
           </View>
         </View>
       </BaseCard>
     </Fragment>
   )
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginVertical: 8
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  title: {
+    width: '100%',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8
+  },
+  data: {
+    width: '50%'
+  },
+  value: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    marginBottom: 4
+  },
+  btns: {
+    width: '50%',
+    alignItems: 'flex-end'
+  },
+  btn: {
+    marginVertical: 4,
+    minWidth: '50%'
+  }
+})
 
 export default ListItem

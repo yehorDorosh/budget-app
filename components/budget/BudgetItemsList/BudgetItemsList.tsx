@@ -1,12 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useRef, useState } from 'react'
-import { StyleSheet, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent, View } from 'react-native'
+import { FC, useEffect, useState } from 'react'
+import { StyleSheet, ScrollView, NativeSyntheticEvent, NativeScrollEvent, View, ActivityIndicator } from 'react-native'
 import { useAppSelector, useAppDispatch } from '../../../hooks/useReduxTS'
 import { getBudgetItems } from '../../../store/budget/budget-item-actions'
 import BudgetItem from './BudgetItem'
-import BaseCard from '../../ui/BaseCard'
 import { BudgetItem as BudgetItemInterface, budgetItemActions } from '../../../store/budget/budget-item-slice'
-import InViewPort from '../../ui/InViewPort'
 
 interface Props {
   token: string
@@ -18,6 +16,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
   const [list, setList] = useState<BudgetItemInterface[]>([])
   const [lastItemPosition, setLastItemPosition] = useState<number>(0)
   const [isVisible, setIsVisible] = useState(false)
+  const [isEndOfList, setIsEndOfList] = useState(false)
 
   const fetchBudgetItems = async (override = false) => {
     const res = await dispatch(getBudgetItems({ token }))
@@ -25,7 +24,10 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
       const newItems = res.data.payload.budgetItems
       if (override) setList(newItems)
       else setList((prev) => [...prev, ...newItems])
-      if (newItems.length) dispatch(budgetItemActions.incrementPage())
+      if (newItems.length) {
+        dispatch(budgetItemActions.incrementPage())
+        setIsEndOfList(false)
+      } else setIsEndOfList(true)
     }
   }
 
@@ -144,25 +146,27 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
 
   return (
     <ScrollView onScroll={onScrollHandler} scrollEventThrottle={1000}>
-      <BaseCard>
-        {list.length !== 0 &&
-          list.map((budgetItem) => (
-            <BudgetItem
-              key={budgetItem.id}
-              token={token}
-              budgetItem={budgetItem}
-              onChange={listChangesHandler}
-              onDelete={deleteListItemHandler}
-            />
-          ))}
-        <View
-          onLayout={(event) => {
-            setLastItemPosition(event.nativeEvent.layout.y)
-          }}
-        ></View>
-      </BaseCard>
+      {list.length !== 0 &&
+        list.map((budgetItem) => (
+          <BudgetItem
+            key={budgetItem.id}
+            token={token}
+            budgetItem={budgetItem}
+            onChange={listChangesHandler}
+            onDelete={deleteListItemHandler}
+          />
+        ))}
+      <View
+        onLayout={(event) => {
+          setLastItemPosition(event.nativeEvent.layout.y)
+        }}
+      >
+        {!isEndOfList && <ActivityIndicator size="large" color="black" />}
+      </View>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({})
 
 export default BudgetItemsList
