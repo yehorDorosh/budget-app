@@ -6,6 +6,7 @@ import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
 
 export interface FieldState {
+  type: 'text' | 'select'
   id: string
   value: string
   isValid: boolean
@@ -16,6 +17,7 @@ export interface FieldState {
   attrs?: TextInputProps
   validator?: (value: string, matchValue?: string) => boolean
   matchValidatorConfig?: { id: string }
+  selectItems?: { label: string; value: string }[]
 }
 
 interface FormState {
@@ -27,6 +29,7 @@ interface FormState {
 }
 
 interface FieldConfig {
+  type?: 'text' | 'select'
   id: string
   label?: string
   defaultValue?: string
@@ -34,6 +37,7 @@ interface FieldConfig {
   attrs?: TextInputProps
   validator?: (value: string, matchValue?: string) => boolean
   matchValidatorConfig?: { id: string }
+  selectItems?: { label: string; value: string }[]
 }
 
 interface FormConfig {
@@ -122,6 +126,7 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
 
 const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   const defaultFields: FieldState[] = fieldsConfig.map((field) => ({
+    type: field.type ?? 'text',
     id: field.id,
     value: field.defaultValue || '',
     isValid: true,
@@ -130,7 +135,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     errMsg: field.errMsg,
     attrs: field.attrs,
     validator: field.validator,
-    matchValidatorConfig: field.matchValidatorConfig
+    matchValidatorConfig: field.matchValidatorConfig,
+    selectItems: field.selectItems
   }))
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)
@@ -142,6 +148,11 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   })
 
   const inputHandler = (id: string, value: string) => {
+    dispatchForm({ type: 'TOUCHED' })
+    dispatchFields({ type: 'CHANGE', id, value })
+  }
+
+  const selectHandler = (id: string, value: string, index: number) => {
     dispatchForm({ type: 'TOUCHED' })
     dispatchFields({ type: 'CHANGE', id, value })
   }
@@ -184,17 +195,36 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
       )}
       {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
       {form.errMsg && <Text style={styles.error}>{form.errMsg}</Text>}
-      {fields.map((field) => (
-        <BaseInput
-          key={field.id}
-          label={field.label}
-          isValid={field.isValid}
-          errMsg={field.errMsg}
-          value={field.value}
-          onChangeText={inputHandler.bind(null, field.id)}
-          {...field.attrs}
-        />
-      ))}
+      {fields.map((field) => {
+        switch (field.type) {
+          case 'select':
+            return (
+              <BaseInput
+                type="select"
+                selectItems={field.selectItems}
+                key={field.id}
+                label={field.label}
+                isValid={field.isValid}
+                errMsg={field.errMsg}
+                value={field.value}
+                onChangeSelect={selectHandler.bind(null, field.id)}
+                {...field.attrs}
+              />
+            )
+          default:
+            return (
+              <BaseInput
+                key={field.id}
+                label={field.label}
+                isValid={field.isValid}
+                errMsg={field.errMsg}
+                value={field.value}
+                onChangeText={inputHandler.bind(null, field.id)}
+                {...field.attrs}
+              />
+            )
+        }
+      })}
       <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>
     </BaseCard>
   )

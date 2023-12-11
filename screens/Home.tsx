@@ -6,6 +6,7 @@ import AuthForms from '../components/auth/AuthForms/AuthForms'
 import { autoLoginAutoLogout } from '../store/user/user-actions'
 import * as SplashScreen from 'expo-splash-screen'
 import LoaderOverlay from '../components/utils/LoaderOverlay'
+import AddBudgetItemForm from '../components/budget/AddBudgetItemForm/AddBudgetItemForm'
 
 // SplashScreen.preventAutoHideAsync()
 
@@ -35,8 +36,7 @@ const Home = () => {
 
   return (
     <View style={ScreenStyles.screen} onLayout={onLayoutRootView}>
-      {user && <Text>{user.email}</Text>}
-      {user && <Text>{user.token}</Text>}
+      {user.token && <AddBudgetItemForm />}
       {!user.token && <AuthForms />}
     </View>
   )

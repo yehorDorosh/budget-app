@@ -33,3 +33,30 @@ export const deleteBudgetItem = ({ token, id }: { token: string; id: number }) =
     }
   }
 }
+
+export const addBudgetItem = ({
+  token,
+  categoryId,
+  name,
+  value,
+  userDate
+}: {
+  token: string
+  categoryId: number
+  name: string
+  value: number
+  userDate: string
+}) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.post<ApiRes>(
+        `${api}/api/budget/add-budget-item`,
+        { categoryId, name, value, userDate },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
