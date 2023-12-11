@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import { FC } from 'react'
 import Form from '../../Form/Form'
 import { notEmptyValidator } from '../../../utils/validators'
+import { isDateValid, formatDateYearMonthDay } from '../../../utils/date'
 import { FieldState } from '../../Form/Form'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { addBudgetItem } from '../../../store/budget/budget-item-actions'
@@ -56,10 +57,12 @@ const AddBudgetItemForm = () => {
           ]
         },
         {
+          type: 'date',
           id: 'date',
           label: 'Date',
           errMsg: 'Date should be valid',
-          validator: notEmptyValidator,
+          validator: isDateValid,
+          defaultValue: formatDateYearMonthDay(new Date()),
           attrs: { autoCapitalize: 'none' }
         }
       ]}

@@ -1,12 +1,12 @@
 import { FC, useReducer, Reducer, useState, useEffect } from 'react'
-import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
 
 export interface FieldState {
-  type: 'text' | 'select'
+  type: 'text' | 'select' | 'date'
   id: string
   value: string
   isValid: boolean
@@ -29,7 +29,7 @@ interface FormState {
 }
 
 interface FieldConfig {
-  type?: 'text' | 'select'
+  type?: 'text' | 'select' | 'date'
   id: string
   label?: string
   defaultValue?: string
@@ -187,46 +187,51 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
   return (
-    <BaseCard style={styles.form}>
-      {form.isLoading && (
-        <View style={styles.overlay}>
-          <ActivityIndicator style={styles.spinner} size="large" color="black" />
-        </View>
-      )}
-      {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
-      {form.errMsg && <Text style={styles.error}>{form.errMsg}</Text>}
-      {fields.map((field) => {
-        switch (field.type) {
-          case 'select':
-            return (
-              <BaseInput
-                type="select"
-                selectItems={field.selectItems}
-                key={field.id}
-                label={field.label}
-                isValid={field.isValid}
-                errMsg={field.errMsg}
-                value={field.value}
-                onChangeSelect={selectHandler.bind(null, field.id)}
-                {...field.attrs}
-              />
-            )
-          default:
-            return (
-              <BaseInput
-                key={field.id}
-                label={field.label}
-                isValid={field.isValid}
-                errMsg={field.errMsg}
-                value={field.value}
-                onChangeText={inputHandler.bind(null, field.id)}
-                {...field.attrs}
-              />
-            )
-        }
-      })}
-      <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>
-    </BaseCard>
+    <ScrollView>
+      <KeyboardAvoidingView behavior="position">
+        <BaseCard style={styles.form}>
+          {form.isLoading && (
+            <View style={styles.overlay}>
+              <ActivityIndicator style={styles.spinner} size="large" color="black" />
+            </View>
+          )}
+          {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
+          {form.errMsg && <Text style={styles.error}>{form.errMsg}</Text>}
+          {fields.map((field) => {
+            switch (field.type) {
+              case 'select':
+                return (
+                  <BaseInput
+                    type="select"
+                    selectItems={field.selectItems}
+                    key={field.id}
+                    label={field.label}
+                    isValid={field.isValid}
+                    errMsg={field.errMsg}
+                    value={field.value}
+                    onChangeSelect={selectHandler.bind(null, field.id)}
+                    {...field.attrs}
+                  />
+                )
+              default:
+                return (
+                  <BaseInput
+                    type={field.type}
+                    key={field.id}
+                    label={field.label}
+                    isValid={field.isValid}
+                    errMsg={field.errMsg}
+                    value={field.value}
+                    onChangeText={inputHandler.bind(null, field.id)}
+                    {...field.attrs}
+                  />
+                )
+            }
+          })}
+          <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>
+        </BaseCard>
+      </KeyboardAvoidingView>
+    </ScrollView>
   )
 }
 
