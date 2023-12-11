@@ -6,6 +6,7 @@ import { isDateValid, formatDateYearMonthDay } from '../../../utils/date'
 import { FieldState } from '../../Form/Form'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { addBudgetItem } from '../../../store/budget/budget-item-actions'
+import { CategoryType } from '../../../types/enums'
 
 const AddBudgetItemForm = () => {
   const dispatch = useAppDispatch()
@@ -30,6 +31,16 @@ const AddBudgetItemForm = () => {
   return (
     <Form
       fieldsConfig={[
+        {
+          type: 'radio',
+          id: 'categoryType',
+          label: 'Category Type',
+          selectItems: [
+            { label: 'Expense', value: CategoryType.EXPENSE },
+            { label: 'Income', value: CategoryType.INCOME }
+          ],
+          defaultValue: CategoryType.EXPENSE
+        },
         {
           id: 'name',
           label: 'Name',

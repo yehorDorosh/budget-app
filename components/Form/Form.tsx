@@ -4,9 +4,10 @@ import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
+import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 export interface FieldState {
-  type: 'text' | 'select' | 'date'
+  type: 'text' | 'select' | 'date' | 'radio'
   id: string
   value: string
   isValid: boolean
@@ -29,7 +30,7 @@ interface FormState {
 }
 
 interface FieldConfig {
-  type?: 'text' | 'select' | 'date'
+  type?: 'text' | 'select' | 'date' | 'radio'
   id: string
   label?: string
   defaultValue?: string
@@ -211,6 +212,18 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                     value={field.value}
                     onChangeSelect={selectHandler.bind(null, field.id)}
                     {...field.attrs}
+                  />
+                )
+              case 'radio':
+                return (
+                  <SegmentedControl
+                    key={field.id}
+                    values={field.selectItems?.map((item) => item.label)}
+                    selectedIndex={field.selectItems?.findIndex((item) => item.value == field.value) || 0}
+                    onChange={(event) => {
+                      if (field.selectItems) inputHandler(field.id, field.selectItems[event.nativeEvent.selectedSegmentIndex].value)
+                    }}
+                    style={{ marginBottom: 8 }}
                   />
                 )
               default:
