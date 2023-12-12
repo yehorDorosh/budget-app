@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native'
-import { FC } from 'react'
+import { FC, useEffect, useState, useCallback } from 'react'
 import Form from '../../Form/Form'
 import { notEmptyValidator } from '../../../utils/validators'
 import { isDateValid, formatDateYearMonthDay } from '../../../utils/date'
@@ -7,12 +7,25 @@ import { FieldState } from '../../Form/Form'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { addBudgetItem } from '../../../store/budget/budget-item-actions'
 import { CategoryType } from '../../../types/enums'
+import { getCategories } from '../../../store/categories/categories-actions'
+import { Category } from '../../../store/categories/categories-slice'
 
 const AddBudgetItemForm = () => {
   const dispatch = useAppDispatch()
-  const user = useAppSelector((state) => state.user)
+  const defaultCategoryType = CategoryType.EXPENSE
+  const filterCategories = (categories: Category[], categoryType: CategoryType) => {
+    return [
+      { label: 'Select or create category', value: '' },
+      ...categories
+        .filter((category) => category.categoryType === categoryType)
+        .map((category) => ({ label: category.name, value: category.id.toString() }))
+    ]
+  }
 
-  const categories = ['Food', 'Transportation', 'Entertainment', 'Other']
+  const user = useAppSelector((state) => state.user)
+  const categories = useAppSelector((state) => state.categories.categories)
+  const [selectList, setSelectList] = useState<{ label: string; value: string }[]>(filterCategories(categories, defaultCategoryType))
+  const [categoryType, setCategoryType] = useState<CategoryType>(defaultCategoryType)
 
   const submitHandler = async (...fields: FieldState[]) => {
     const res = await dispatch(
@@ -28,6 +41,27 @@ const AddBudgetItemForm = () => {
     return res
   }
 
+  const formChangeHandler = (fields: FieldState[]) => {
+    const value = fields[0].value
+    if (value !== categoryType) {
+      setCategoryType(value as CategoryType)
+    }
+  }
+
+  useEffect(() => {
+    const prepare = async () => {
+      if (user.token) {
+        await dispatch(getCategories({ token: user.token }))
+      }
+    }
+
+    prepare()
+  }, [user.token])
+
+  useEffect(() => {
+    setSelectList(filterCategories(categories, categoryType))
+  }, [categories, categoryType])
+
   return (
     <Form
       fieldsConfig={[
@@ -39,7 +73,7 @@ const AddBudgetItemForm = () => {
             { label: 'Expense', value: CategoryType.EXPENSE },
             { label: 'Income', value: CategoryType.INCOME }
           ],
-          defaultValue: CategoryType.EXPENSE
+          defaultValue: defaultCategoryType
         },
         {
           id: 'name',
@@ -60,12 +94,8 @@ const AddBudgetItemForm = () => {
           label: 'Category',
           errMsg: 'Category should be valid',
           validator: notEmptyValidator,
-          selectItems: [
-            { label: 'Food', value: '1' },
-            { label: 'Transportation', value: '2' },
-            { label: 'Entertainment', value: '3' },
-            { label: 'Other', value: '4' }
-          ]
+          selectItems: selectList,
+          defaultValue: ''
         },
         {
           type: 'date',
@@ -79,7 +109,8 @@ const AddBudgetItemForm = () => {
       ]}
       formConfig={{
         submitText: 'Add',
-        onSubmit: submitHandler
+        onSubmit: submitHandler,
+        onChangeFields: formChangeHandler
       }}
     />
   )

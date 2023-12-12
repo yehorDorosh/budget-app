@@ -1,5 +1,6 @@
 import { ResCodes } from '../enums'
 import { BudgetItem } from '../../store/budget/budget-item-slice.tsx'
+import { Category } from '../../store/categories/category-slice.tsx'
 
 export interface ValidationError {
   location: string
@@ -31,4 +32,8 @@ export interface LoginPayload {
 export interface BudgetItemsPayload {
   budgetItems: BudgetItem[]
   total: number
+}
+
+export interface CategoriesPayload {
+  categories: Category[]
 }

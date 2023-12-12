@@ -45,9 +45,14 @@ interface FormConfig {
   submitText: string
   onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string; validationErrors?: ValidationError[] }; status: number | null }>
   errMsg?: string
+  onChangeFields?: (fields: FieldState[]) => void
 }
 
-type FieldsAction = { type: 'CHANGE'; id: string; value: string } | { type: 'CHECK-ALL' } | { type: 'CLEAR' }
+type FieldsAction =
+  | { type: 'CHANGE'; id: string; value: string }
+  | { type: 'CHECK-ALL' }
+  | { type: 'CLEAR' }
+  | { type: 'UPDATE_SELECT_LIST'; fieldsConfig: FieldConfig[] }
 type FormAction =
   | { type: 'SUBMITTING'; fields: FieldState[] }
   | { type: 'TOUCHED' }
@@ -60,6 +65,22 @@ interface Props {
   formConfig: FormConfig
 }
 
+const setupFields = (fieldsConfig: FieldConfig[]) => {
+  return fieldsConfig.map((field) => ({
+    type: field.type ?? 'text',
+    id: field.id,
+    value: field.defaultValue || '',
+    isValid: true,
+    isTouched: false,
+    label: field.label,
+    errMsg: field.errMsg,
+    attrs: field.attrs,
+    validator: field.validator,
+    matchValidatorConfig: field.matchValidatorConfig,
+    selectItems: field.selectItems
+  }))
+}
+
 const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
   const prevFields = [...state]
 
@@ -67,7 +88,7 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
     case 'CHANGE':
       const index = state.findIndex((field) => field.id === action.id)
       const field = state[index]
-      field.value = action.value.trim()
+      field.value = action.value?.trim()
       field.isTouched = true
       const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
       field.isValid = field.validator ? field.validator(action.value, matchValue) : true
@@ -81,9 +102,15 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       })
     case 'CLEAR':
       return state.map((field) => {
+        if (field.type === 'radio') return field
         field.value = ''
         field.isValid = true
         field.isTouched = false
+        return field
+      })
+    case 'UPDATE_SELECT_LIST':
+      return state.map((field, i) => {
+        if (action.fieldsConfig[i].selectItems) field.selectItems = action.fieldsConfig[i].selectItems
         return field
       })
     default:
@@ -126,19 +153,7 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
 }
 
 const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
-  const defaultFields: FieldState[] = fieldsConfig.map((field) => ({
-    type: field.type ?? 'text',
-    id: field.id,
-    value: field.defaultValue || '',
-    isValid: true,
-    isTouched: false,
-    label: field.label,
-    errMsg: field.errMsg,
-    attrs: field.attrs,
-    validator: field.validator,
-    matchValidatorConfig: field.matchValidatorConfig,
-    selectItems: field.selectItems
-  }))
+  const defaultFields: FieldState[] = setupFields(fieldsConfig)
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)
   const [form, dispatchForm] = useReducer(reducerForm, {
@@ -186,6 +201,17 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
       })
     }
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
+
+  // Update select list when selectItems change
+  useEffect(() => {
+    dispatchFields({ type: 'UPDATE_SELECT_LIST', fieldsConfig })
+    dispatchFields({ type: 'CLEAR' })
+  }, [...fieldsConfig.map((field) => field.selectItems)])
+
+  // Call onChangeFields when some of fields was changed
+  useEffect(() => {
+    formConfig.onChangeFields?.(fields)
+  }, [...fields.map((field) => field.value)])
 
   return (
     <ScrollView>
