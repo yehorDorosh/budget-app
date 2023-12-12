@@ -106,7 +106,8 @@ const AddBudgetItemForm = () => {
           errMsg: 'Date should be valid',
           validator: isDateValid,
           defaultValue: formatDateYearMonthDay(new Date()),
-          attrs: { autoCapitalize: 'none' }
+          attrs: { autoCapitalize: 'none' },
+          notClearable: true
         }
       ]}
       formConfig={{

@@ -30,6 +30,7 @@ interface FieldConfig {
   validator?: (value: string, matchValue?: string) => boolean
   matchValidatorConfig?: { id: string }
   selectItems?: { label: string; value: string }[]
+  notClearable?: boolean
 }
 
 interface FormConfig {
@@ -86,7 +87,7 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       })
     case 'CLEAR':
       return state.map((field, i) => {
-        if (action.fieldsConfig[i].type === 'radio') return field
+        if (action.fieldsConfig[i].type === 'radio' || action.fieldsConfig[i].notClearable) return field
         field.value = ''
         field.isValid = true
         field.isTouched = false
