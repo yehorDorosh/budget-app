@@ -7,17 +7,9 @@ import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 export interface FieldState {
-  // type: 'text' | 'select' | 'date' | 'radio'
-  id: string
   value: string
   isValid: boolean
   isTouched: boolean
-  label?: string
-  errMsg?: string
-  defaultValue?: string
-  attrs?: TextInputProps
-  matchValidatorConfig?: { id: string }
-  selectItems?: { label: string; value: string }[]
 }
 
 interface FormState {
@@ -51,7 +43,6 @@ type FieldsAction =
   | { type: 'CHANGE'; id: string; value: string; fieldsConfig: FieldConfig[] }
   | { type: 'CHECK-ALL'; fieldsConfig: FieldConfig[] }
   | { type: 'CLEAR'; fieldsConfig: FieldConfig[] }
-  | { type: 'UPDATE_SELECT_LIST'; fieldsConfig: FieldConfig[] }
 type FormAction =
   | { type: 'SUBMITTING'; fields: FieldState[]; fieldsConfig: FieldConfig[] }
   | { type: 'TOUCHED' }
@@ -66,17 +57,9 @@ interface Props {
 
 const setupFields = (fieldsConfig: FieldConfig[]) => {
   return fieldsConfig.map((field) => ({
-    // type: field.type ?? 'text',
-    id: field.id,
     value: field.defaultValue || '',
     isValid: true,
-    isTouched: false,
-    label: field.label,
-    errMsg: field.errMsg,
-    attrs: field.attrs,
-    validator: field.validator,
-    matchValidatorConfig: field.matchValidatorConfig,
-    selectItems: field.selectItems
+    isTouched: false
   }))
 }
 
@@ -85,19 +68,19 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
 
   switch (action.type) {
     case 'CHANGE':
-      const index = state.findIndex((field) => field.id === action.id)
+      const index = action.fieldsConfig.findIndex((field) => field.id === action.id)
       const validator = action.fieldsConfig[index].validator
       const field = state[index]
       field.value = action.value?.trim()
       field.isTouched = true
-      const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
+      const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
       field.isValid = validator ? validator(action.value, matchValue) : true
       prevFields[index] = field
       return prevFields
     case 'CHECK-ALL':
-      return state.map((field, i) => {
-        const validator = action.fieldsConfig[i].validator
-        const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
+      return state.map((field, index) => {
+        const validator = action.fieldsConfig[index].validator
+        const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
         field.isValid = validator ? validator(field.value, matchValue) : true
         return field
       })
@@ -107,11 +90,6 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
         field.value = ''
         field.isValid = true
         field.isTouched = false
-        return field
-      })
-    case 'UPDATE_SELECT_LIST':
-      return state.map((field, i) => {
-        if (action.fieldsConfig[i].selectItems) field.selectItems = action.fieldsConfig[i].selectItems
         return field
       })
     default:
@@ -183,7 +161,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   }
 
   useEffect(() => {
-    const formValidationOn = fields.some((_, i) => !!fieldsConfig[i].validator)
+    const formValidationOn = fieldsConfig.some((field) => !!field.validator)
 
     if (form.formIsValid && (form.formIsTouched || !formValidationOn) && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
@@ -206,9 +184,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     }
   }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
 
-  // Update select list when selectItems change
+  // Clear form values when selectItems was changed
   useEffect(() => {
-    dispatchFields({ type: 'UPDATE_SELECT_LIST', fieldsConfig })
     dispatchFields({ type: 'CLEAR', fieldsConfig })
   }, [...fieldsConfig.map((field) => field.selectItems)])
 
@@ -234,24 +211,25 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                 return (
                   <BaseInput
                     type="select"
-                    selectItems={field.selectItems}
-                    key={field.id}
-                    label={field.label}
+                    selectItems={fieldsConfig[i].selectItems}
+                    key={fieldsConfig[i].id}
+                    label={fieldsConfig[i].label}
                     isValid={field.isValid}
-                    errMsg={field.errMsg}
+                    errMsg={fieldsConfig[i].errMsg}
                     value={field.value}
-                    onChangeSelect={selectHandler.bind(null, field.id)}
-                    {...field.attrs}
+                    onChangeSelect={selectHandler.bind(null, fieldsConfig[i].id)}
+                    {...fieldsConfig[i].attrs}
                   />
                 )
               case 'radio':
                 return (
                   <SegmentedControl
-                    key={field.id}
-                    values={field.selectItems?.map((item) => item.label)}
-                    selectedIndex={field.selectItems?.findIndex((item) => item.value == field.value) || 0}
+                    key={fieldsConfig[i].id}
+                    values={fieldsConfig[i].selectItems?.map((item) => item.label)}
+                    selectedIndex={fieldsConfig[i].selectItems?.findIndex((item) => item.value == field.value) || 0}
                     onChange={(event) => {
-                      if (field.selectItems) inputHandler(field.id, field.selectItems[event.nativeEvent.selectedSegmentIndex].value)
+                      if (fieldsConfig[i].selectItems)
+                        inputHandler(fieldsConfig[i].id, fieldsConfig[i].selectItems![event.nativeEvent.selectedSegmentIndex].value)
                     }}
                     style={{ marginBottom: 8 }}
                   />
@@ -260,13 +238,13 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                 return (
                   <BaseInput
                     type={fieldsConfig[i].type}
-                    key={field.id}
-                    label={field.label}
+                    key={fieldsConfig[i].id}
+                    label={fieldsConfig[i].label}
                     isValid={field.isValid}
-                    errMsg={field.errMsg}
+                    errMsg={fieldsConfig[i].errMsg}
                     value={field.value}
-                    onChangeText={inputHandler.bind(null, field.id)}
-                    {...field.attrs}
+                    onChangeText={inputHandler.bind(null, fieldsConfig[i].id)}
+                    {...fieldsConfig[i].attrs}
                   />
                 )
             }
