@@ -7,7 +7,7 @@ import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 export interface FieldState {
-  type: 'text' | 'select' | 'date' | 'radio'
+  // type: 'text' | 'select' | 'date' | 'radio'
   id: string
   value: string
   isValid: boolean
@@ -29,7 +29,7 @@ interface FormState {
 }
 
 interface FieldConfig {
-  type?: 'text' | 'select' | 'date' | 'radio'
+  type: 'text' | 'select' | 'date' | 'radio'
   id: string
   label?: string
   defaultValue?: string
@@ -50,7 +50,7 @@ interface FormConfig {
 type FieldsAction =
   | { type: 'CHANGE'; id: string; value: string; fieldsConfig: FieldConfig[] }
   | { type: 'CHECK-ALL'; fieldsConfig: FieldConfig[] }
-  | { type: 'CLEAR' }
+  | { type: 'CLEAR'; fieldsConfig: FieldConfig[] }
   | { type: 'UPDATE_SELECT_LIST'; fieldsConfig: FieldConfig[] }
 type FormAction =
   | { type: 'SUBMITTING'; fields: FieldState[]; fieldsConfig: FieldConfig[] }
@@ -66,7 +66,7 @@ interface Props {
 
 const setupFields = (fieldsConfig: FieldConfig[]) => {
   return fieldsConfig.map((field) => ({
-    type: field.type ?? 'text',
+    // type: field.type ?? 'text',
     id: field.id,
     value: field.defaultValue || '',
     isValid: true,
@@ -102,8 +102,8 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
         return field
       })
     case 'CLEAR':
-      return state.map((field) => {
-        if (field.type === 'radio') return field
+      return state.map((field, i) => {
+        if (action.fieldsConfig[i].type === 'radio') return field
         field.value = ''
         field.isValid = true
         field.isTouched = false
@@ -200,7 +200,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
         } else if (res.status === null && res.data && res.data.errMsg) {
           Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
         } else if (res.status !== 401) {
-          dispatchFields({ type: 'CLEAR' })
+          dispatchFields({ type: 'CLEAR', fieldsConfig })
         }
       })
     }
@@ -209,7 +209,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   // Update select list when selectItems change
   useEffect(() => {
     dispatchFields({ type: 'UPDATE_SELECT_LIST', fieldsConfig })
-    dispatchFields({ type: 'CLEAR' })
+    dispatchFields({ type: 'CLEAR', fieldsConfig })
   }, [...fieldsConfig.map((field) => field.selectItems)])
 
   // Call onChangeFields when some of fields was changed
@@ -228,8 +228,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
           )}
           {formConfig.errMsg && <Text style={styles.error}>{formConfig.errMsg}</Text>}
           {form.errMsg && <Text style={styles.error}>{form.errMsg}</Text>}
-          {fields.map((field) => {
-            switch (field.type) {
+          {fields.map((field, i) => {
+            switch (fieldsConfig[i].type) {
               case 'select':
                 return (
                   <BaseInput
@@ -259,7 +259,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
               default:
                 return (
                   <BaseInput
-                    type={field.type}
+                    type={fieldsConfig[i].type}
                     key={field.id}
                     label={field.label}
                     isValid={field.isValid}

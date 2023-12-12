@@ -26,6 +26,7 @@ const ChangeEmailForm = () => {
     <Form
       fieldsConfig={[
         {
+          type: 'text',
           id: 'email',
           label: 'New Email',
           errMsg: 'Email should be valid',

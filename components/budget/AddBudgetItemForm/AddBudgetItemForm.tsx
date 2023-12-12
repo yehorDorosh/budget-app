@@ -76,12 +76,14 @@ const AddBudgetItemForm = () => {
           defaultValue: defaultCategoryType
         },
         {
+          type: 'text',
           id: 'name',
           label: 'Name',
           errMsg: 'Name should be valid',
           validator: notEmptyValidator
         },
         {
+          type: 'text',
           id: 'amount',
           label: 'Amount',
           errMsg: 'Amount should be valid',

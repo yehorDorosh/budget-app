@@ -26,6 +26,7 @@ const SendRestorePasswordEmailForm = () => {
       <Form
         fieldsConfig={[
           {
+            type: 'text',
             id: 'email',
             label: 'Email',
             errMsg: 'Email should be valid',

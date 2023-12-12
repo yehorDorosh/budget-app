@@ -29,6 +29,7 @@ const ChangePasswordForm = () => {
     <Form
       fieldsConfig={[
         {
+          type: 'text',
           id: 'password',
           label: 'New password',
           errMsg: 'Password should contain at least 8 characters, 1 uppercase letter and at least 1 number',
@@ -36,6 +37,7 @@ const ChangePasswordForm = () => {
           attrs: { autoCapitalize: 'none', secureTextEntry: true, autoCorrect: false }
         },
         {
+          type: 'text',
           id: 'check-password',
           label: 'Repeat password',
           errMsg: 'Passwords should match',

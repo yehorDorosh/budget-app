@@ -23,6 +23,7 @@ const DeleteUserForm = () => {
     <Form
       fieldsConfig={[
         {
+          type: 'text',
           id: 'password',
           label: 'Password',
           errMsg: 'Password is required',

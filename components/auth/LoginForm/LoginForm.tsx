@@ -26,6 +26,7 @@ const LoginForm = () => {
     <Form
       fieldsConfig={[
         {
+          type: 'text',
           id: 'email',
           label: 'Email',
           errMsg: 'Email is required',
@@ -33,6 +34,7 @@ const LoginForm = () => {
           attrs: { autoCapitalize: 'none' }
         },
         {
+          type: 'text',
           id: 'password',
           label: 'Password',
           errMsg: 'Password is required',

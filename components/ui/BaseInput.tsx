@@ -9,7 +9,7 @@ interface Props extends React.ComponentProps<typeof TextInput> {
   label?: string
   value?: string
   errMsg?: string
-  type?: 'text' | 'select' | 'date'
+  type?: 'text' | 'select' | 'date' | 'radio'
   onChangeText?: (text: string) => void
   onChangeSelect?: (value: string, index: number) => void
   selectItems?: { label: string; value: string }[]

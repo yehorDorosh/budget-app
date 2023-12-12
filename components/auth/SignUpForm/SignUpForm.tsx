@@ -17,6 +17,7 @@ const SignUpForm = () => {
     <Form
       fieldsConfig={[
         {
+          type: 'text',
           id: 'email',
           label: 'Email',
           errMsg: 'Email should be valid',
@@ -24,6 +25,7 @@ const SignUpForm = () => {
           attrs: { autoCapitalize: 'none' }
         },
         {
+          type: 'text',
           id: 'password',
           label: 'Password',
           errMsg: 'Password should contain at least 8 characters, 1 uppercase letter and at least 1 number',
@@ -31,6 +33,7 @@ const SignUpForm = () => {
           attrs: { autoCapitalize: 'none', secureTextEntry: true, autoCorrect: false }
         },
         {
+          type: 'text',
           id: 'check-password',
           label: 'Repeat password',
           errMsg: 'Passwords should match',
