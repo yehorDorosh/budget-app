@@ -31,10 +31,10 @@ const AddBudgetItemForm = () => {
     const res = await dispatch(
       addBudgetItem({
         token: user.token!,
-        categoryId: +fields[2].value,
-        name: fields[0].value,
-        value: +fields[1].value,
-        userDate: fields[3].value
+        categoryId: +fields[3].value,
+        name: fields[1].value,
+        value: +fields[2].value,
+        userDate: fields[4].value
       })
     )
 
