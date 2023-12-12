@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '../../../hooks/useReduxTS'
 import { getBudgetItems } from '../../../store/budget/budget-item-actions'
 import BudgetItem from './BudgetItem'
 import { BudgetItem as BudgetItemInterface, budgetItemActions } from '../../../store/budget/budget-item-slice'
+import { useIsFocused } from '@react-navigation/native'
 
 interface Props {
   token: string
@@ -12,13 +13,15 @@ interface Props {
 
 const BudgetItemsList: FC<Props> = ({ token }) => {
   const dispatch = useAppDispatch()
+  const isFocused = useIsFocused()
   const filters = useAppSelector((state) => state.budgetItem.filters)
   const [list, setList] = useState<BudgetItemInterface[]>([])
   const [lastItemPosition, setLastItemPosition] = useState<number>(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [isEndOfList, setIsEndOfList] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const fetchBudgetItems = async (override = false) => {
+    setLoading(true)
     const res = await dispatch(getBudgetItems({ token }))
     if (res.data.payload && res.data.payload.budgetItems) {
       const newItems = res.data.payload.budgetItems
@@ -26,9 +29,9 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
       else setList((prev) => [...prev, ...newItems])
       if (newItems.length) {
         dispatch(budgetItemActions.incrementPage())
-        setIsEndOfList(false)
-      } else setIsEndOfList(true)
+      }
     }
+    setLoading(false)
   }
 
   const listChangesHandler = async (budgetItem: BudgetItemInterface) => {
@@ -80,7 +83,6 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
       if (resLastPage.data.payload && resLastPage.data.payload.budgetItems) {
         const start = lastItemPage * filters.perPage! - filters.perPage! // start index of last page
         const chunk = resLastPage.data.payload.budgetItems // last page
-        console.log(start, chunk)
 
         for (let i = 0; i < start + chunk.length; i++) {
           if (i >= start && i < start + chunk.length) {
@@ -144,6 +146,12 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
     }
   }, [isVisible])
 
+  useEffect(() => {
+    if (isFocused) {
+      updateList()
+    }
+  }, [isFocused])
+
   return (
     <ScrollView onScroll={onScrollHandler} scrollEventThrottle={1000}>
       {list.length !== 0 &&
@@ -161,7 +169,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
           setLastItemPosition(event.nativeEvent.layout.y)
         }}
       >
-        {!isEndOfList && <ActivityIndicator size="large" color="black" />}
+        {loading && <ActivityIndicator size="large" color="black" />}
       </View>
     </ScrollView>
   )
