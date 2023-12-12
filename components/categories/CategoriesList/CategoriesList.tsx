@@ -12,13 +12,11 @@ const CategoriesList: FC<Props> = ({ token }) => {
   const categories = useAppSelector((state) => state.categories.categories)
 
   return (
-    <BaseCard>
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <CategoryItem id={item.id} value={item.name} categoryType={item.categoryType} token={token} />}
-      />
-    </BaseCard>
+    <FlatList
+      data={categories}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => <CategoryItem id={item.id} value={item.name} categoryType={item.categoryType} token={token} />}
+    />
   )
 }
 

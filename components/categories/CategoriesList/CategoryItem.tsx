@@ -51,12 +51,12 @@ const ListItem: FC<Props> = ({ id, value, categoryType, token }) => {
         <p>Are you sure you want to delete this category?</p>
         <p>All budget items in this category also will be deleted!</p>
       </BaseModal>
-      <BaseCard>
-        <View>
+      <BaseCard style={styles.card}>
+        <View style={styles.item}>
           <Text>{value}</Text>
           <Text>{categoryType}</Text>
-          <View>
-            <BaseButton mode="smallBtn" onPress={editBtnHandler}>
+          <View style={styles.btns}>
+            <BaseButton style={[{ marginRight: 8 }]} mode="smallBtn" onPress={editBtnHandler}>
               Edit
             </BaseButton>
             <BaseButton mode="smallBtn" onPress={() => setOpenDeleteModal(true)}>
@@ -69,6 +69,19 @@ const ListItem: FC<Props> = ({ id, value, categoryType, token }) => {
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  card: {
+    marginBottom: 8
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  btns: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  }
+})
 
 export default ListItem
