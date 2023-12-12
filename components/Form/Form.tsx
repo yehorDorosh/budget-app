@@ -16,7 +16,6 @@ export interface FieldState {
   errMsg?: string
   defaultValue?: string
   attrs?: TextInputProps
-  validator?: (value: string, matchValue?: string) => boolean
   matchValidatorConfig?: { id: string }
   selectItems?: { label: string; value: string }[]
 }
@@ -49,12 +48,12 @@ interface FormConfig {
 }
 
 type FieldsAction =
-  | { type: 'CHANGE'; id: string; value: string }
-  | { type: 'CHECK-ALL' }
+  | { type: 'CHANGE'; id: string; value: string; fieldsConfig: FieldConfig[] }
+  | { type: 'CHECK-ALL'; fieldsConfig: FieldConfig[] }
   | { type: 'CLEAR' }
   | { type: 'UPDATE_SELECT_LIST'; fieldsConfig: FieldConfig[] }
 type FormAction =
-  | { type: 'SUBMITTING'; fields: FieldState[] }
+  | { type: 'SUBMITTING'; fields: FieldState[]; fieldsConfig: FieldConfig[] }
   | { type: 'TOUCHED' }
   | { type: 'RESET' }
   | { type: 'ERR_MSG'; errMsg: string }
@@ -87,17 +86,19 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
   switch (action.type) {
     case 'CHANGE':
       const index = state.findIndex((field) => field.id === action.id)
+      const validator = action.fieldsConfig[index].validator
       const field = state[index]
       field.value = action.value?.trim()
       field.isTouched = true
       const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
-      field.isValid = field.validator ? field.validator(action.value, matchValue) : true
+      field.isValid = validator ? validator(action.value, matchValue) : true
       prevFields[index] = field
       return prevFields
     case 'CHECK-ALL':
-      return state.map((field) => {
+      return state.map((field, i) => {
+        const validator = action.fieldsConfig[i].validator
         const matchValue = state.find((_) => _.id === field.matchValidatorConfig?.id)?.value
-        field.isValid = field.validator ? field.validator(field.value, matchValue) : true
+        field.isValid = validator ? validator(field.value, matchValue) : true
         return field
       })
     case 'CLEAR':
@@ -123,7 +124,10 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
     case 'SUBMITTING':
       return {
         ...state,
-        formIsValid: action.fields.every((field) => (field.validator ? field.isValid : true)),
+        formIsValid: action.fields.every((field, i) => {
+          const validator = action.fieldsConfig[i].validator
+          return validator ? field.isValid : true
+        }),
         formIsSubmitted: true
       }
     case 'TOUCHED':
@@ -165,21 +169,21 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
 
   const inputHandler = (id: string, value: string) => {
     dispatchForm({ type: 'TOUCHED' })
-    dispatchFields({ type: 'CHANGE', id, value })
+    dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
   }
 
   const selectHandler = (id: string, value: string, index: number) => {
     dispatchForm({ type: 'TOUCHED' })
-    dispatchFields({ type: 'CHANGE', id, value })
+    dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
   }
 
   const submitHandler = () => {
-    dispatchFields({ type: 'CHECK-ALL' })
-    dispatchForm({ type: 'SUBMITTING', fields })
+    dispatchFields({ type: 'CHECK-ALL', fieldsConfig })
+    dispatchForm({ type: 'SUBMITTING', fields, fieldsConfig })
   }
 
   useEffect(() => {
-    const formValidationOn = fields.some((field) => !!field.validator)
+    const formValidationOn = fields.some((_, i) => !!fieldsConfig[i].validator)
 
     if (form.formIsValid && (form.formIsTouched || !formValidationOn) && form.formIsSubmitted) {
       dispatchForm({ type: 'RESET' })
