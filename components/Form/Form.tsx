@@ -42,8 +42,10 @@ interface FormConfig {
 
 type FieldsAction =
   | { type: 'CHANGE'; id: string; value: string; fieldsConfig: FieldConfig[] }
-  | { type: 'CHECK-ALL'; fieldsConfig: FieldConfig[] }
-  | { type: 'CLEAR'; fieldsConfig: FieldConfig[] }
+  | { type: 'CHECK_ALL'; fieldsConfig: FieldConfig[] }
+  | { type: 'CLEAR_ALL'; fieldsConfig: FieldConfig[] }
+  | { type: 'SET_DEFAULT'; fieldsConfig: FieldConfig[] }
+  | { type: 'RESET_TOUCH'; id: string; fieldsConfig: FieldConfig[] }
 type FormAction =
   | { type: 'SUBMITTING'; fields: FieldState[]; fieldsConfig: FieldConfig[] }
   | { type: 'TOUCHED' }
@@ -78,14 +80,16 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       field.isValid = validator ? validator(action.value, matchValue) : true
       prevFields[index] = field
       return prevFields
-    case 'CHECK-ALL':
+    case 'CHECK_ALL':
       return state.map((field, index) => {
         const validator = action.fieldsConfig[index].validator
         const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
-        field.isValid = validator ? validator(field.value, matchValue) : true
+        field.isValid = validator
+          ? validator(field.value, matchValue) && (field.isTouched || !!action.fieldsConfig[index].defaultValue)
+          : true
         return field
       })
-    case 'CLEAR':
+    case 'CLEAR_ALL':
       return state.map((field, i) => {
         if (action.fieldsConfig[i].type === 'radio' || action.fieldsConfig[i].notClearable) return field
         field.value = ''
@@ -93,6 +97,17 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
         field.isTouched = false
         return field
       })
+    case 'SET_DEFAULT':
+      return state.map((field, i) => {
+        field.value = action.fieldsConfig[i].defaultValue || ''
+        return field
+      })
+    case 'RESET_TOUCH':
+      const clearIndex = action.fieldsConfig.findIndex((field) => field.id === action.id)
+      const clearField = state[clearIndex]
+      clearField.isTouched = false
+      action.fieldsConfig[clearIndex].defaultValue = ''
+      prevFields[clearIndex] = clearField
     default:
       return state
   }
@@ -157,15 +172,15 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   }
 
   const submitHandler = () => {
-    dispatchFields({ type: 'CHECK-ALL', fieldsConfig })
+    dispatchFields({ type: 'CHECK_ALL', fieldsConfig })
     dispatchForm({ type: 'SUBMITTING', fields, fieldsConfig })
   }
 
   useEffect(() => {
+    if (form.formIsSubmitted) dispatchForm({ type: 'RESET' })
     const formValidationOn = fieldsConfig.some((field) => !!field.validator)
 
     if (form.formIsValid && (form.formIsTouched || !formValidationOn) && form.formIsSubmitted) {
-      dispatchForm({ type: 'RESET' })
       dispatchForm({ type: 'LOADING', isLoading: true })
 
       formConfig.onSubmit(...fields).then((res) => {
@@ -179,15 +194,19 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
         } else if (res.status === null && res.data && res.data.errMsg) {
           Alert.alert('Error', res.data.errMsg, [{ text: 'OK' }])
         } else if (res.status !== 401) {
-          dispatchFields({ type: 'CLEAR', fieldsConfig })
+          dispatchFields({ type: 'CLEAR_ALL', fieldsConfig })
         }
       })
     }
-  }, [form.formIsSubmitted, form.formIsValid, form.formIsTouched])
+  }, [form.formIsSubmitted])
 
-  // Clear form values when selectItems was changed
+  // Clear select fields when selectItems was changed
   useEffect(() => {
-    dispatchFields({ type: 'CLEAR', fieldsConfig })
+    fields.forEach((_, i) => {
+      if (fieldsConfig[i].selectItems && fieldsConfig[i].type === 'select') {
+        dispatchFields({ type: 'RESET_TOUCH', id: fieldsConfig[i].id, fieldsConfig })
+      }
+    })
   }, [...fieldsConfig.map((field) => field.selectItems)])
 
   // Call onChangeFields when some of fields was changed

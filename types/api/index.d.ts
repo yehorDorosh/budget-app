@@ -34,6 +34,10 @@ export interface BudgetItemsPayload {
   total: number
 }
 
+export interface BudgetItemPayload {
+  budgetItem: BudgetItem
+}
+
 export interface CategoriesPayload {
   categories: Category[]
 }

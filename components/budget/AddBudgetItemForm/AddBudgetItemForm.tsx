@@ -9,28 +9,16 @@ import { addBudgetItem } from '../../../store/budget/budget-item-actions'
 import { CategoryType } from '../../../types/enums'
 import { getCategories } from '../../../store/categories/categories-actions'
 import { Category } from '../../../store/categories/categories-slice'
+import useCategoryFilter from '../../../hooks/useCategoryFilter'
 
 const AddBudgetItemForm = () => {
   const dispatch = useAppDispatch()
-  const defaultCategoryType = CategoryType.EXPENSE
-  const filterCategories = (categories: Category[], categoryType: CategoryType) => {
-    return [
-      { label: 'Select or create category', value: '' },
-      ...categories
-        .filter((category) => category.categoryType === categoryType)
-        .map((category) => ({ label: category.name, value: category.id.toString() }))
-    ]
-  }
-
-  const user = useAppSelector((state) => state.user)
-  const categories = useAppSelector((state) => state.categories.categories)
-  const [selectList, setSelectList] = useState<{ label: string; value: string }[]>(filterCategories(categories, defaultCategoryType))
-  const [categoryType, setCategoryType] = useState<CategoryType>(defaultCategoryType)
+  const { token, categoryType, setCategoryType, defaultCategoryType, filteredCategories } = useCategoryFilter()
 
   const submitHandler = async (...fields: FieldState[]) => {
     const res = await dispatch(
       addBudgetItem({
-        token: user.token!,
+        token: token,
         categoryId: +fields[3].value,
         name: fields[1].value,
         value: +fields[2].value,
@@ -47,20 +35,6 @@ const AddBudgetItemForm = () => {
       setCategoryType(value as CategoryType)
     }
   }
-
-  useEffect(() => {
-    const prepare = async () => {
-      if (user.token) {
-        await dispatch(getCategories({ token: user.token }))
-      }
-    }
-
-    prepare()
-  }, [user.token])
-
-  useEffect(() => {
-    setSelectList(filterCategories(categories, categoryType))
-  }, [categories, categoryType])
 
   return (
     <Form
@@ -96,8 +70,9 @@ const AddBudgetItemForm = () => {
           label: 'Category',
           errMsg: 'Category should be valid',
           validator: notEmptyValidator,
-          selectItems: selectList,
-          defaultValue: ''
+          selectItems: filteredCategories,
+          defaultValue: '',
+          notClearable: true
         },
         {
           type: 'date',

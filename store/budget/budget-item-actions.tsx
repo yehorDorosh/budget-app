@@ -2,7 +2,7 @@ import axios from 'axios'
 import { AppDispatch, RootState } from '..'
 import objectToQueryString from '../../utils/query'
 import { actionErrorHandler } from '../../utils/errors'
-import { ApiRes, BudgetItemsPayload } from '../../types/api'
+import { ApiRes, BudgetItemsPayload, BudgetItemPayload } from '../../types/api'
 
 const api = process.env.EXPO_PUBLIC_API_URL
 
@@ -52,6 +52,37 @@ export const addBudgetItem = ({
       const { data, status } = await axios.post<ApiRes>(
         `${api}/api/budget/add-budget-item`,
         { categoryId, name, value, userDate },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
+
+export const updateBudgetItem = ({
+  token,
+  id,
+  categoryId,
+  name,
+  value,
+  userDate,
+  ignore
+}: {
+  id: number
+  token: string
+  categoryId: number
+  name: string
+  value: number
+  userDate: string
+  ignore: boolean
+}) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.put<ApiRes<BudgetItemPayload>>(
+        `${api}/api/budget/update-budget-item`,
+        { id, categoryId, name, value, userDate, ignore },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       return { data, status }
