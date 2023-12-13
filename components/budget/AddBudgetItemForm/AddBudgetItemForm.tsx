@@ -1,14 +1,11 @@
-import { View, Text, StyleSheet } from 'react-native'
-import { FC, useEffect, useState, useCallback } from 'react'
+import { StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
 import { notEmptyValidator } from '../../../utils/validators'
 import { isDateValid, formatDateYearMonthDay } from '../../../utils/date'
 import { FieldState } from '../../Form/Form'
-import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
+import { useAppDispatch } from '../../../hooks/useReduxTS'
 import { addBudgetItem } from '../../../store/budget/budget-item-actions'
 import { CategoryType } from '../../../types/enums'
-import { getCategories } from '../../../store/categories/categories-actions'
-import { Category } from '../../../store/categories/categories-slice'
 import useCategoryFilter from '../../../hooks/useCategoryFilter'
 
 const AddBudgetItemForm = () => {

@@ -1,4 +1,4 @@
-import { FC, useReducer, Reducer, useState, useEffect } from 'react'
+import { FC, useReducer, Reducer, useEffect } from 'react'
 import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
