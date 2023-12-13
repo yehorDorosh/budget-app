@@ -1,10 +1,11 @@
-import { FC, useReducer, Reducer, useEffect } from 'react'
+import { FC, useReducer, Reducer, useEffect, useRef } from 'react'
 import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
+import { arraysAreEqual } from '../../utils/comparator'
 
 export interface FieldState {
   value: string
@@ -151,6 +152,7 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
 }
 
 const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
+  const prevFieldsConfig = useRef(fieldsConfig) // use to get previous fieldsConfig for useEffect
   const defaultFields: FieldState[] = setupFields(fieldsConfig)
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)
@@ -203,7 +205,10 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   // Clear select fields when selectItems was changed
   useEffect(() => {
     fields.forEach((_, i) => {
-      if (fieldsConfig[i].selectItems && fieldsConfig[i].type === 'select') {
+      const prevSelectItems = prevFieldsConfig.current[i].selectItems
+      const currSelectItems = fieldsConfig[i].selectItems
+      // For fields with type 'select' and selectItems was changed set isTouch to false and clear defaultValue
+      if (fieldsConfig[i].selectItems && fieldsConfig[i].type === 'select' && !arraysAreEqual(prevSelectItems, currSelectItems)) {
         dispatchFields({ type: 'RESET_TOUCH', id: fieldsConfig[i].id, fieldsConfig })
       }
     })
