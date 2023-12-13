@@ -43,13 +43,13 @@ const ListItem: FC<Props> = ({ id, value, categoryType, token }) => {
         open={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
         title={`Delete Category ${value}?`}
-        // footer={{
-        //   reject: { text: 'Cancel', onClick: () => setOpenDeleteModal(false) },
-        //   accept: { text: 'Delete', onClick: deleteHandler }
-        // }}
+        footer={{
+          reject: { text: 'Cancel', onClick: () => setOpenDeleteModal(false) },
+          accept: { text: 'Delete', onClick: deleteHandler }
+        }}
       >
-        <p>Are you sure you want to delete this category?</p>
-        <p>All budget items in this category also will be deleted!</p>
+        <Text>Are you sure you want to delete this category?</Text>
+        <Text>All budget items in this category also will be deleted!</Text>
       </BaseModal>
       <BaseCard style={styles.card}>
         <View style={styles.item}>
