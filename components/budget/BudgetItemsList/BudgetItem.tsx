@@ -8,6 +8,7 @@ import { CategoryType, ResCodes } from '../../../types/enums'
 import BaseCard from '../../ui/BaseCard'
 import BaseButton from '../../ui/BaseButton'
 import BaseModal from '../../ui/BaseModal'
+import LoaderOverlay from '../../utils/LoaderOverlay'
 
 interface Props {
   token: string
@@ -19,9 +20,12 @@ interface Props {
 const ListItem: FC<Props> = ({ budgetItem, token, onChange, onDelete }) => {
   const dispatch = useAppDispatch()
   const [openForm, setOpenForm] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const deleteHandler = async () => {
+    setIsLoading(true)
     const res = await dispatch(deleteBudgetItem({ token, id: budgetItem.id }))
+    setIsLoading(false)
 
     if (res.data.code === ResCodes.DELETE_BUDGET_ITEM) {
       onDelete(budgetItem.id)
@@ -43,6 +47,7 @@ const ListItem: FC<Props> = ({ budgetItem, token, onChange, onDelete }) => {
         <UpdateBudgetItemForm token={token} currentBudgetItem={budgetItem} onSave={onEditHandler} />
       </BaseModal>
       <BaseCard style={styles.card}>
+        {isLoading && <LoaderOverlay style={styles.overlay} />}
         <View style={styles.container}>
           <Text style={styles.title}>{budgetItem.name}</Text>
           <View style={styles.data}>
@@ -95,6 +100,13 @@ const styles = StyleSheet.create({
   btn: {
     marginVertical: 4,
     minWidth: '50%'
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
   }
 })
 

@@ -1,8 +1,13 @@
+import { FC } from 'react'
 import { View, StyleSheet, ActivityIndicator } from 'react-native'
 
-const LoaderOverlay = () => {
+interface Props {
+  style?: object
+}
+
+const LoaderOverlay: FC<Props> = ({ style }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <ActivityIndicator size="large" color="black" />
     </View>
   )

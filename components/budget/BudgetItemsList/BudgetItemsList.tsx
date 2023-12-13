@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react'
-import { StyleSheet, ScrollView, NativeSyntheticEvent, NativeScrollEvent, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, ScrollView, NativeSyntheticEvent, NativeScrollEvent, View, ActivityIndicator, Dimensions } from 'react-native'
 import { useAppSelector, useAppDispatch } from '../../../hooks/useReduxTS'
 import { getBudgetItems } from '../../../store/budget/budget-item-actions'
 import BudgetItem from './BudgetItem'
 import { BudgetItem as BudgetItemInterface, budgetItemActions } from '../../../store/budget/budget-item-slice'
 import { useIsFocused } from '@react-navigation/native'
+import LoaderOverlay from '../../utils/LoaderOverlay'
 
 interface Props {
   token: string
@@ -18,10 +19,11 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
   const [list, setList] = useState<BudgetItemInterface[]>([])
   const [lastItemPosition, setLastItemPosition] = useState<number>(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [listLoading, setListLoading] = useState(false)
+  const [cmpLoading, setCmpLoading] = useState(false)
 
   const fetchBudgetItems = async (override = false) => {
-    setLoading(true)
+    setListLoading(true)
     const res = await dispatch(getBudgetItems({ token }))
     if (res.data.payload && res.data.payload.budgetItems) {
       const newItems = res.data.payload.budgetItems
@@ -31,7 +33,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
         dispatch(budgetItemActions.incrementPage())
       }
     }
-    setLoading(false)
+    setListLoading(false)
   }
 
   const listChangesHandler = async (budgetItem: BudgetItemInterface) => {
@@ -47,6 +49,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
   }
 
   const deleteListItemHandler = async (id: number) => {
+    setCmpLoading(true)
     /**
      * Override page where element was deleted.
      * Shift all existed elements to the left.
@@ -96,11 +99,12 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
 
       dispatch(budgetItemActions.setPage(prevPage)) // restore number of page for infinite scroll
     }
+    setCmpLoading(false)
   }
 
-  const updateList = () => {
+  const updateList = async () => {
     dispatch(budgetItemActions.resetPage())
-    fetchBudgetItems(true)
+    await fetchBudgetItems(true)
     dispatch(budgetItemActions.onChangeBudgetItems())
   }
 
@@ -154,6 +158,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
 
   return (
     <ScrollView onScroll={onScrollHandler} scrollEventThrottle={1000}>
+      {cmpLoading && <LoaderOverlay style={styles.overlay} />}
       {list.length !== 0 &&
         list.map((budgetItem) => (
           <BudgetItem
@@ -169,12 +174,21 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
           setLastItemPosition(event.nativeEvent.layout.y)
         }}
       >
-        {loading && <ActivityIndicator size="large" color="black" />}
+        {listLoading && <ActivityIndicator size="large" color="black" />}
       </View>
     </ScrollView>
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    maxHeight: Dimensions.get('window').height
+  }
+})
 
 export default BudgetItemsList
