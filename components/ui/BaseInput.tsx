@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from 'react'
+import React, { FC, Fragment, useState } from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'

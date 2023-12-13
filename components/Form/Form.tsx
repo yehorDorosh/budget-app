@@ -1,4 +1,4 @@
-import { FC, useReducer, Reducer, useEffect, useRef } from 'react'
+import { FC, useReducer, Reducer, useEffect, useRef, useCallback } from 'react'
 import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
@@ -163,15 +163,15 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     isLoading: false
   })
 
-  const inputHandler = (id: string, value: string) => {
+  const inputHandler = useCallback((id: string, value: string) => {
     dispatchForm({ type: 'TOUCHED' })
     dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
-  }
+  }, [])
 
-  const selectHandler = (id: string, value: string, index: number) => {
+  const selectHandler = useCallback((id: string, value: string, index: number) => {
     dispatchForm({ type: 'TOUCHED' })
     dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
-  }
+  }, [])
 
   const submitHandler = () => {
     dispatchFields({ type: 'CHECK_ALL', fieldsConfig })
