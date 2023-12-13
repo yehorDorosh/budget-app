@@ -207,7 +207,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     fields.forEach((_, i) => {
       const prevSelectItems = prevFieldsConfig.current[i].selectItems
       const currSelectItems = fieldsConfig[i].selectItems
-      // For fields with type 'select' and selectItems was changed set isTouch to false and clear defaultValue
+      // For fields with type 'select' and selectItems was changed, set isTouch to false and clear defaultValue
       if (fieldsConfig[i].selectItems && fieldsConfig[i].type === 'select' && !arraysAreEqual(prevSelectItems, currSelectItems)) {
         dispatchFields({ type: 'RESET_TOUCH', id: fieldsConfig[i].id, fieldsConfig })
       }
