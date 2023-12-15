@@ -13,7 +13,7 @@ import { decode, encode } from 'base-64'
 import Profile from './screens/Profile'
 import { useAppSelector } from './hooks/useReduxTS'
 import SendRestorePasswordEmail from './screens/SendRestorePasswordEmail'
-import Budget from './screens/Budget'
+import BudgetListScreen from './screens/BudgetListScreen'
 import Categories from './screens/Categories'
 
 if (!global.btoa) {
@@ -45,10 +45,10 @@ const DrawerNavigation = () => {
       />
       {token && (
         <Drawer.Screen
-          name="Budget"
-          component={Budget}
+          name="BudgetListScreen"
+          component={BudgetListScreen}
           options={{
-            title: 'Budget'
+            title: 'Budget List'
           }}
         />
       )}
