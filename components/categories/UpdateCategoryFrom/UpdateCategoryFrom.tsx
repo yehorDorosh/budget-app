@@ -1,11 +1,11 @@
 import { FC } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
 import { notEmptyValidator } from '../../../utils/validators'
 import { FieldState } from '../../Form/Form'
-import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
+import { useAppDispatch } from '../../../hooks/useReduxTS'
 import { CategoryType } from '../../../types/enums'
-import { addCategory } from '../../../store/categories/categories-actions'
+import { updateCategory } from '../../../store/categories/categories-actions'
 
 interface Props {
   id: number
@@ -15,14 +15,12 @@ interface Props {
   onSave: () => void
 }
 
-const UpdateCategoryFrom: FC<Props> = () => {
+const UpdateCategoryFrom: FC<Props> = ({ id, token, defaultName, defaultCategoryType, onSave }) => {
   const dispatch = useAppDispatch()
-  const defaultCategoryType = CategoryType.EXPENSE
-  const user = useAppSelector((state) => state.user)
 
   const submitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(addCategory({ token: user.token!, name: fields[1].value, categoryType: fields[0].value as CategoryType }))
-
+    const res = await dispatch(updateCategory({ token, id, name: fields[1].value, categoryType: fields[0].value as CategoryType }))
+    onSave()
     return res
   }
 
@@ -31,7 +29,7 @@ const UpdateCategoryFrom: FC<Props> = () => {
       fieldsConfig={[
         {
           type: 'radio',
-          id: 'categoryType',
+          id: 'updCategoryType',
           label: 'Category Type',
           selectItems: [
             { label: 'Expense', value: CategoryType.EXPENSE },
@@ -41,15 +39,16 @@ const UpdateCategoryFrom: FC<Props> = () => {
         },
         {
           type: 'text',
-          id: 'categoryName',
+          id: 'updCategoryName',
           label: 'New Category Name',
           errMsg: 'Category name should not be empty',
           validator: notEmptyValidator,
-          attrs: { autoCapitalize: 'none' }
+          attrs: { autoCapitalize: 'none' },
+          defaultValue: defaultName
         }
       ]}
       formConfig={{
-        submitText: 'Add Category',
+        submitText: 'Save',
         onSubmit: submitHandler
       }}
     />

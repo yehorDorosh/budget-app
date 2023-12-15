@@ -56,3 +56,31 @@ export const deleteCategory = ({ token, id }: { token: string; id: number }) => 
     }
   }
 }
+
+export const updateCategory = ({
+  token,
+  id,
+  name,
+  categoryType
+}: {
+  token: string
+  id: number
+  name: string
+  categoryType: CategoryType
+}) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.put<ApiRes<CategoriesPayload>>(
+        `${api}/api/categories/update-category`,
+        { id, name, categoryType },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      if (data.payload && data.payload.categories) {
+        dispatch(categoriesActions.setCategories(data.payload.categories))
+      }
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
