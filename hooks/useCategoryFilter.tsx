@@ -4,14 +4,14 @@ import { useAppSelector, useAppDispatch } from './useReduxTS'
 import { Category } from '../store/categories/categories-slice'
 import { getCategories } from '../store/categories/categories-actions'
 
-const useCategoryFilter = (defaultCategoryType = CategoryType.EXPENSE) => {
+const useCategoryFilter = (defaultCategoryType: CategoryType | null = CategoryType.EXPENSE) => {
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.user)
-  const filterCategories = (categories: Category[], categoryType: CategoryType) => {
+  const filterCategories = (categories: Category[], categoryType: CategoryType | null) => {
     return [
       { label: 'Select or create category', value: '' },
       ...categories
-        .filter((category) => category.categoryType === categoryType)
+        .filter((category) => category.categoryType === categoryType || !categoryType)
         .map((category) => ({ label: category.name, value: category.id.toString() }))
     ]
   }
@@ -19,7 +19,7 @@ const useCategoryFilter = (defaultCategoryType = CategoryType.EXPENSE) => {
   const [filteredCategories, setFilteredCategories] = useState<{ label: string; value: string }[]>(
     filterCategories(categories, defaultCategoryType)
   )
-  const [categoryType, setCategoryType] = useState<CategoryType>(defaultCategoryType)
+  const [categoryType, setCategoryType] = useState<CategoryType | null>(defaultCategoryType)
 
   useEffect(() => {
     const prepare = async () => {

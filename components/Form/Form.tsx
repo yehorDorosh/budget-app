@@ -5,7 +5,7 @@ import BaseButton from '../ui/BaseButton'
 import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import { arraysAreEqual } from '../../utils/comparator'
+import { arraysAreEqual, objectAreEqual } from '../../utils/comparator'
 
 export interface FieldState {
   value: string
@@ -32,11 +32,12 @@ interface FieldConfig {
   matchValidatorConfig?: { id: string }
   selectItems?: { label: string; value: string }[]
   notClearable?: boolean
+  value?: string
 }
 
 interface FormConfig {
-  submitText: string
-  onSubmit: (...args: FieldState[]) => Promise<{ data: { errMsg?: string; validationErrors?: ValidationError[] }; status: number | null }>
+  submitText?: string
+  onSubmit?: (...args: FieldState[]) => Promise<{ data: { errMsg?: string; validationErrors?: ValidationError[] }; status: number | null }>
   errMsg?: string
   onChangeFields?: (fields: FieldState[]) => void
 }
@@ -185,7 +186,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     if (form.formIsValid && (form.formIsTouched || !formValidationOn) && form.formIsSubmitted) {
       dispatchForm({ type: 'LOADING', isLoading: true })
 
-      formConfig.onSubmit(...fields).then((res) => {
+      formConfig.onSubmit?.(...fields).then((res) => {
         dispatchForm({ type: 'LOADING', isLoading: false })
 
         if (res.status === 422) {
@@ -218,6 +219,26 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   useEffect(() => {
     formConfig.onChangeFields?.(fields)
   }, [...fields.map((field) => field.value)])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fields.forEach((field, i) => {
+        const prevValue = field.value
+        const currValue = fieldsConfig[i].value
+        const isDifferent =
+          Array.isArray(prevValue) && Array.isArray(currValue)
+            ? !arraysAreEqual(prevValue, currValue)
+            : typeof prevValue === 'object' && typeof currValue === 'object'
+              ? !objectAreEqual(prevValue, currValue)
+              : prevValue !== currValue
+        if (fieldsConfig[i].value && currValue !== undefined && isDifferent) {
+          dispatchFields({ type: 'CHANGE', id: fieldsConfig[i].id, value: currValue, fieldsConfig })
+        }
+      })
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [...fieldsConfig.map((field) => field.value)])
 
   return (
     <ScrollView>
@@ -274,7 +295,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                 )
             }
           })}
-          <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>
+          {formConfig.submitText && formConfig.onSubmit && <BaseButton onPress={submitHandler}>{formConfig.submitText}</BaseButton>}
         </BaseCard>
       </KeyboardAvoidingView>
     </ScrollView>

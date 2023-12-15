@@ -6,6 +6,7 @@ import BudgetItemsList from '../components/budget/BudgetItemsList/BudgetItemsLis
 import { NavigationProp } from '@react-navigation/native'
 import HeaderRight from '../components/layout/header/HeaderRight'
 import BaseModal from '../components/ui/BaseModal'
+import FilterBudgeForm from '../components/budget/FilterBudgeForm/FilterBudgetListForm'
 
 const BudgetListScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const token = useRouteGuard()!
@@ -24,7 +25,7 @@ const BudgetListScreen = ({ navigation }: { navigation: NavigationProp<any> }) =
   return (
     <View style={ScreenStyles.screen}>
       <BaseModal open={isOpenFilterModal} onClose={() => setIsOpenFilterModal(false)} title="Filter">
-        <Text>Hello</Text>
+        <FilterBudgeForm />
       </BaseModal>
       <BudgetItemsList token={token} />
     </View>

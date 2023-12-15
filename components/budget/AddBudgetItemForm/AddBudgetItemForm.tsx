@@ -44,7 +44,7 @@ const AddBudgetItemForm = () => {
             { label: 'Expense', value: CategoryType.EXPENSE },
             { label: 'Income', value: CategoryType.INCOME }
           ],
-          defaultValue: defaultCategoryType
+          defaultValue: defaultCategoryType ? defaultCategoryType : CategoryType.EXPENSE
         },
         {
           type: 'text',

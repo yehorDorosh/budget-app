@@ -31,7 +31,7 @@ const LoginForm = () => {
           label: 'Email',
           errMsg: 'Email is required',
           validator: notEmptyValidator,
-          attrs: { autoCapitalize: 'none' }
+          attrs: { autoCapitalize: 'none', inputMode: 'email', autoCorrect: false }
         },
         {
           type: 'text',

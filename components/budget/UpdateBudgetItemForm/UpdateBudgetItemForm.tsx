@@ -58,7 +58,7 @@ const UpdateBudgetItemForm: FC<Props> = ({ token, currentBudgetItem, onSave }) =
             { label: 'Expense', value: CategoryType.EXPENSE },
             { label: 'Income', value: CategoryType.INCOME }
           ],
-          defaultValue: defaultCategoryType
+          defaultValue: defaultCategoryType ? defaultCategoryType : ''
         },
         {
           type: 'text',

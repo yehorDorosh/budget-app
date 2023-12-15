@@ -22,7 +22,7 @@ const SignUpForm = () => {
           label: 'Email',
           errMsg: 'Email should be valid',
           validator: emailValidator,
-          attrs: { autoCapitalize: 'none' }
+          attrs: { autoCapitalize: 'none', inputMode: 'email', autoCorrect: false }
         },
         {
           type: 'text',
