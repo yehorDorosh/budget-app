@@ -131,7 +131,7 @@ const BudgetItemsList: FC<Props> = ({ token }) => {
     const { y } = event.nativeEvent.contentOffset
     const height = event.nativeEvent.layoutMeasurement.height
 
-    if (y + height > lastItemPosition && token) {
+    if (y + height > lastItemPosition - 500 && token) {
       setIsVisible(true)
     }
   }
