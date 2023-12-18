@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import useRouteGuard from '../hooks/useRouteGuard'
 import ScreenStyles from '../styles/ScreenStyles'
 import AddCategoryFrom from '../components/categories/AddCategoryFrom/AddCategoryFrom'

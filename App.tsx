@@ -16,6 +16,7 @@ import SendRestorePasswordEmail from './screens/SendRestorePasswordEmail'
 import BudgetListScreen from './screens/BudgetListScreen'
 import Categories from './screens/Categories'
 import BudgetScreen from './screens/BudgetScreen'
+import MonthlyTrendScreen from './screens/MonthlyTrendScreen'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -59,6 +60,15 @@ const DrawerNavigation = () => {
           component={BudgetScreen}
           options={{
             title: 'Budget'
+          }}
+        />
+      )}
+      {token && (
+        <Drawer.Screen
+          name="MonthlyTrendScreen"
+          component={MonthlyTrendScreen}
+          options={{
+            title: 'Monthly Trend'
           }}
         />
       )}

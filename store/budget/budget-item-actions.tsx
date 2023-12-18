@@ -2,7 +2,7 @@ import axios from 'axios'
 import { AppDispatch, RootState } from '..'
 import objectToQueryString from '../../utils/query'
 import { actionErrorHandler } from '../../utils/errors'
-import { ApiRes, BudgetItemsPayload, BudgetItemPayload, CategoryRate } from '../../types/api'
+import { ApiRes, BudgetItemsPayload, BudgetItemPayload, CategoryRate, MonthlyTrendPayload } from '../../types/api'
 
 const api = process.env.EXPO_PUBLIC_API_URL
 
@@ -98,6 +98,20 @@ export const getStatistics = ({ token }: { token: string }) => {
     const query = filters ? '?' + objectToQueryString(filters, ['page', 'perPage', 'ignore', 'categoryType', 'category']) : ''
     try {
       const { data, status } = await axios.get<ApiRes<CategoryRate>>(`${api}/api/budget/get-statistics${query}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}
+
+export const getMonthlyTrend = ({ token, year }: { year: string; token: string }) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    const query = year ? '?' + objectToQueryString({ year }) : ''
+    try {
+      const { data, status } = await axios.get<ApiRes<MonthlyTrendPayload>>(`${api}/api/budget/get-monthly-trend${query}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       return { data, status }

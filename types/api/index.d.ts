@@ -53,3 +53,13 @@ export interface StatisticsPayload {
   incomes: string | null
   categoriesRates: CategoryRate[]
 }
+
+export interface MonthlyTrendPayload {
+  aveExpenses: string | null
+  aveIncomes: string | null
+  aveSaved: string | null
+  totalSaved: string | null
+  monthlyExpenses: { month: string; total: string }[]
+  monthlyIncomes: { month: string; total: string }[]
+  maxTotal: string | null
+}
