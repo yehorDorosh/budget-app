@@ -15,6 +15,7 @@ import { useAppSelector } from './hooks/useReduxTS'
 import SendRestorePasswordEmail from './screens/SendRestorePasswordEmail'
 import BudgetListScreen from './screens/BudgetListScreen'
 import Categories from './screens/Categories'
+import BudgetScreen from './screens/BudgetScreen'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -49,6 +50,15 @@ const DrawerNavigation = () => {
           component={BudgetListScreen}
           options={{
             title: 'Budget List'
+          }}
+        />
+      )}
+      {token && (
+        <Drawer.Screen
+          name="BudgetScreen"
+          component={BudgetScreen}
+          options={{
+            title: 'Budget'
           }}
         />
       )}

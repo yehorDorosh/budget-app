@@ -10,6 +10,11 @@ export interface ValidationError {
   value: string
 }
 
+export interface CategoryRate {
+  name: string
+  sum: number
+}
+
 export interface ApiRes<T = void> {
   message: string
   code: ResCodes
@@ -40,4 +45,11 @@ export interface BudgetItemPayload {
 
 export interface CategoriesPayload {
   categories: Category[]
+}
+
+export interface StatisticsPayload {
+  sum: string | null
+  expenses: string | null
+  incomes: string | null
+  categoriesRates: CategoryRate[]
 }
