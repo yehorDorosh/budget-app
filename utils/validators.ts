@@ -22,6 +22,14 @@ export const notEmptyValidator: ValidationFunction = (value) => {
   return isValid
 }
 
+export const isCheckedValidator = (value: string) => {
+  const booleanValue = /true|false/.test(value)
+  if (booleanValue) {
+    return value === 'true' ? true : false
+  }
+  return false
+}
+
 export const shouldMatchValidator: ValidationFunction = (value, matchValue) => {
   if (matchValue === undefined) {
     throw new Error('client/src/utils/validators.ts: shouldMatchValidator requires a matchValue')

@@ -3,24 +3,43 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { isDateValid } from '../../utils/date'
+import Checkbox from 'expo-checkbox'
 
 interface Props extends React.ComponentProps<typeof TextInput> {
   isValid: boolean
   label?: string
   value?: string
   errMsg?: string
-  type?: 'text' | 'select' | 'date' | 'radio'
+  type?: 'text' | 'select' | 'date' | 'radio' | 'checkbox'
   onChangeText?: (text: string) => void
   onChangeSelect?: (value: string, index: number) => void
+  onChangeCheckbox?: (value: boolean) => void
   selectItems?: { label: string; value: string }[]
+  isChecked?: boolean
 }
 
-const BaseInput: FC<Props> = ({ type = 'text', label, isValid, value, errMsg, selectItems, onChangeText, onChangeSelect, ...props }) => {
+const BaseInput: FC<Props> = ({
+  type = 'text',
+  label,
+  isValid,
+  value,
+  errMsg,
+  selectItems,
+  isChecked,
+  onChangeText,
+  onChangeSelect,
+  onChangeCheckbox,
+  ...props
+}) => {
   const [showDatePicker, setShowDatePicker] = useState(false)
+
+  const onChangeCheckboxLabelHandler = () => {
+    onChangeCheckbox!(!isChecked)
+  }
 
   return (
     <View style={styles.field}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && type !== 'checkbox' && <Text style={styles.label}>{label}</Text>}
       {type === 'text' && <TextInput style={styles.input} value={value} onChangeText={onChangeText} {...props} />}
       {type === 'select' && (
         <View style={styles.select}>
@@ -47,6 +66,16 @@ const BaseInput: FC<Props> = ({ type = 'text', label, isValid, value, errMsg, se
             />
           )}
         </Fragment>
+      )}
+      {type === 'checkbox' && (
+        <View style={styles.checkboxContainer}>
+          <View style={styles.checkboxSection}>
+            <Checkbox value={isChecked} onValueChange={onChangeCheckbox} />
+            <Text style={styles.checkboxLabel} onPress={onChangeCheckboxLabelHandler}>
+              {label}
+            </Text>
+          </View>
+        </View>
       )}
       {!isValid && errMsg && <Text style={styles.errMsg}>{errMsg}</Text>}
     </View>
@@ -75,6 +104,19 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 2,
     borderRadius: 8
+  },
+  checkboxContainer: {
+    flex: 1
+  },
+  checkboxSection: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  checkbox: {},
+  checkboxLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 4
   }
 })
 

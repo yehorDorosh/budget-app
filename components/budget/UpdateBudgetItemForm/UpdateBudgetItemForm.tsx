@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { StyleSheet } from 'react-native'
 import { BudgetItem } from '../../../store/budget/budget-item-slice'
 import Form from '../../Form/Form'
-import { notEmptyValidator } from '../../../utils/validators'
+import { notEmptyValidator, isCheckedValidator } from '../../../utils/validators'
 import { isDateValid } from '../../../utils/date'
 import { CategoryType } from '../../../types/enums'
 import { useAppDispatch } from '../../../hooks/useReduxTS'
@@ -28,10 +28,10 @@ const UpdateBudgetItemForm: FC<Props> = ({ token, currentBudgetItem, onSave }) =
         id: currentBudgetItem.id,
         token: token,
         categoryId: +fields[3].value,
-        name: fields[1].value,
+        name: fields[1].value.toString(),
         value: +fields[2].value,
-        userDate: fields[4].value,
-        ignore: currentBudgetItem.ignore
+        userDate: fields[4].value.toString(),
+        ignore: !!fields[5].value
       })
     )
 
@@ -95,6 +95,13 @@ const UpdateBudgetItemForm: FC<Props> = ({ token, currentBudgetItem, onSave }) =
           validator: isDateValid,
           defaultValue: currentBudgetItem.userDate,
           attrs: { autoCapitalize: 'none' },
+          notClearable: true
+        },
+        {
+          type: 'checkbox',
+          id: 'ignore',
+          label: 'Ignore',
+          defaultValue: currentBudgetItem.ignore,
           notClearable: true
         }
       ]}

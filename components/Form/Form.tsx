@@ -8,7 +8,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { arraysAreEqual, objectAreEqual } from '../../utils/comparator'
 
 export interface FieldState {
-  value: string
+  value: string | boolean
   isValid: boolean
   isTouched: boolean
 }
@@ -22,17 +22,17 @@ interface FormState {
 }
 
 interface FieldConfig {
-  type: 'text' | 'select' | 'date' | 'radio'
+  type: 'text' | 'select' | 'date' | 'radio' | 'checkbox'
   id: string
   label?: string
-  defaultValue?: string
+  defaultValue?: string | boolean
   errMsg?: string
   attrs?: TextInputProps
   validator?: (value: string, matchValue?: string) => boolean
   matchValidatorConfig?: { id: string }
   selectItems?: { label: string; value: string }[]
   notClearable?: boolean
-  value?: string
+  value?: string | boolean
 }
 
 interface FormConfig {
@@ -43,7 +43,7 @@ interface FormConfig {
 }
 
 type FieldsAction =
-  | { type: 'CHANGE'; id: string; value: string; fieldsConfig: FieldConfig[] }
+  | { type: 'CHANGE'; id: string; value: string | boolean; fieldsConfig: FieldConfig[] }
   | { type: 'CHECK_ALL'; fieldsConfig: FieldConfig[] }
   | { type: 'CLEAR_ALL'; fieldsConfig: FieldConfig[] }
   | { type: 'SET_DEFAULT'; fieldsConfig: FieldConfig[] }
@@ -76,10 +76,10 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       const index = action.fieldsConfig.findIndex((field) => field.id === action.id)
       const validator = action.fieldsConfig[index].validator
       const field = state[index]
-      field.value = action.value?.trim()
+      field.value = typeof action.value === 'string' ? action.value?.trim() : action.value
       field.isTouched = true
       const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
-      field.isValid = validator ? validator(action.value, matchValue) : true
+      field.isValid = validator ? validator(action.value.toString(), matchValue?.toString()) : true
       prevFields[index] = field
       return prevFields
     case 'CHECK_ALL':
@@ -87,7 +87,7 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
         const validator = action.fieldsConfig[index].validator
         const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
         field.isValid = validator
-          ? validator(field.value, matchValue) && (field.isTouched || !!action.fieldsConfig[index].defaultValue)
+          ? validator(field.value.toString(), matchValue?.toString()) && (field.isTouched || !!action.fieldsConfig[index].defaultValue)
           : true
         return field
       })
@@ -174,6 +174,11 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
     dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
   }, [])
 
+  const checkboxHandler = useCallback((id: string, value: boolean) => {
+    dispatchForm({ type: 'TOUCHED' })
+    dispatchFields({ type: 'CHANGE', id, value, fieldsConfig })
+  }, [])
+
   const submitHandler = () => {
     dispatchFields({ type: 'CHECK_ALL', fieldsConfig })
     dispatchForm({ type: 'SUBMITTING', fields, fieldsConfig })
@@ -254,6 +259,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
           {fields.map((field, i) => {
             switch (fieldsConfig[i].type) {
               case 'select':
+                if (typeof field.value === 'boolean') return null
                 return (
                   <BaseInput
                     type="select"
@@ -264,6 +270,21 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                     errMsg={fieldsConfig[i].errMsg}
                     value={field.value}
                     onChangeSelect={selectHandler.bind(null, fieldsConfig[i].id)}
+                    {...fieldsConfig[i].attrs}
+                  />
+                )
+              case 'checkbox':
+                if (field.value === undefined) return null
+                return (
+                  <BaseInput
+                    type="checkbox"
+                    selectItems={fieldsConfig[i].selectItems}
+                    key={fieldsConfig[i].id}
+                    label={fieldsConfig[i].label}
+                    isValid={field.isValid}
+                    errMsg={fieldsConfig[i].errMsg}
+                    isChecked={field.value as unknown as boolean}
+                    onChangeCheckbox={checkboxHandler.bind(null, fieldsConfig[i].id)}
                     {...fieldsConfig[i].attrs}
                   />
                 )
@@ -281,6 +302,7 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                   />
                 )
               default:
+                if (typeof field.value === 'boolean') return null
                 return (
                   <BaseInput
                     type={fieldsConfig[i].type}
