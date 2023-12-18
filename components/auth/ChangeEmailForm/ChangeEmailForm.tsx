@@ -18,7 +18,7 @@ const ChangeEmailForm = () => {
   }
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(updateUser({ token, payload: { email: fields[0].value } }))
+    const res = await dispatch(updateUser({ token, payload: { email: fields[0].value.toString() } }))
     return res
   }
 

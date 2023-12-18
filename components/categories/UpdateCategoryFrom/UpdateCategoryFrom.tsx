@@ -19,7 +19,9 @@ const UpdateCategoryFrom: FC<Props> = ({ id, token, defaultName, defaultCategory
   const dispatch = useAppDispatch()
 
   const submitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(updateCategory({ token, id, name: fields[1].value, categoryType: fields[0].value as CategoryType }))
+    const res = await dispatch(
+      updateCategory({ token, id, name: fields[1].value.toString(), categoryType: fields[0].value as CategoryType })
+    )
     onSave()
     return res
   }

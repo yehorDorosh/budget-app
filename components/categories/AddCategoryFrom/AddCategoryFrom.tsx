@@ -12,7 +12,9 @@ const AddCategoryFrom = () => {
   const user = useAppSelector((state) => state.user)
 
   const submitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(addCategory({ token: user.token!, name: fields[1].value, categoryType: fields[0].value as CategoryType }))
+    const res = await dispatch(
+      addCategory({ token: user.token!, name: fields[1].value.toString(), categoryType: fields[0].value as CategoryType })
+    )
 
     return res
   }

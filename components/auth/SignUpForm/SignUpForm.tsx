@@ -9,7 +9,7 @@ const SignUpForm = () => {
   const dispatch = useAppDispatch()
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(signUp({ email: fields[0].value, password: fields[1].value }))
+    const res = await dispatch(signUp({ email: fields[0].value.toString(), password: fields[1].value.toString() }))
     return res
   }
 

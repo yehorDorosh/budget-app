@@ -18,7 +18,7 @@ const ChangePasswordForm = () => {
   }
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(updateUser({ token, payload: { password: fields[0].value } }))
+    const res = await dispatch(updateUser({ token, payload: { password: fields[0].value.toString() } }))
     if (res.status === 200) {
       Alert.alert('Success', 'Password changed successfully')
     }

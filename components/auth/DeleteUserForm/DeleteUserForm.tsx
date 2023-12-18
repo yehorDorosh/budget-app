@@ -12,7 +12,7 @@ const DeleteUserForm = () => {
   const token = useAppSelector((state) => state.user.token)!
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
-    const res = await dispatch(deleteUser({ token, password: fields[0].value }))
+    const res = await dispatch(deleteUser({ token, password: fields[0].value.toString() }))
     if (res.status === 200) {
       dispatch(userActions.logout())
     }

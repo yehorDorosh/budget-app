@@ -12,7 +12,7 @@ const LoginForm = () => {
 
   const onSubmitHandler = async (...fields: FieldState[]) => {
     setFormError(undefined)
-    const res = await dispatch(login({ email: fields[0].value, password: fields[1].value }))
+    const res = await dispatch(login({ email: fields[0].value.toString(), password: fields[1].value.toString() }))
     if (res.status === 401) {
       setFormError('Invalid email or password')
     } else if (res.status === 200) {

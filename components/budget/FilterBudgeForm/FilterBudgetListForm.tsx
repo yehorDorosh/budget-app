@@ -24,33 +24,34 @@ const FilterBudgeForm = () => {
     dispatch(budgetItemActions.setActiveFilter(filter))
   }
 
-  // const ignoreFilterHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   dispatch(budgetItemActions.setFilterIgnore(e.target.checked))
-  // }
-
   const filterChangeHandler = (fields: FieldState[]) => {
     const categoryType = fields[0].value
     const category = fields[1].value
     const name = fields[2].value
+    const ignore = fields[3].value
 
     if (categoryType !== categoryTypeFilter) {
-      dispatch(budgetItemActions.setFilterCategoryType(categoryType))
+      dispatch(budgetItemActions.setFilterCategoryType(categoryType.toString()))
       dispatch(budgetItemActions.setFilterCategory(''))
       setCategoryType(categoryType as CategoryType)
     }
 
     if (+category !== categoryFilter) {
-      dispatch(budgetItemActions.setFilterCategory(category))
+      dispatch(budgetItemActions.setFilterCategory(category.toString()))
     }
 
     if (name !== nameFilter) {
-      dispatch(budgetItemActions.setFilterName(name))
+      dispatch(budgetItemActions.setFilterName(name.toString()))
+    }
+
+    if (ignore !== ignoreFilter) {
+      dispatch(budgetItemActions.setFilterIgnore(!!ignore))
     }
   }
 
   const monthFilterHandler = (fields: FieldState[]) => {
     const date = fields[0].value
-    const month = formatDateYearMonth(new Date(date))
+    const month = formatDateYearMonth(new Date(date.toString()))
     if (month !== filterMonth) {
       dispatch(budgetItemActions.setFilterMonth(month))
     }
@@ -59,7 +60,7 @@ const FilterBudgeForm = () => {
   const yearFilterHandler = (fields: FieldState[]) => {
     const year = fields[0].value
     if (year !== filterYear) {
-      dispatch(budgetItemActions.setFilterYear(year))
+      dispatch(budgetItemActions.setFilterYear(year.toString()))
     }
   }
 
@@ -91,6 +92,12 @@ const FilterBudgeForm = () => {
             id: 'name',
             label: 'Name',
             defaultValue: nameFilter
+          },
+          {
+            type: 'checkbox',
+            id: 'ignoreFilter',
+            label: 'Ignore',
+            defaultValue: ignoreFilter
           }
         ]}
         formConfig={{

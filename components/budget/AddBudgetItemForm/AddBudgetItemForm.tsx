@@ -17,9 +17,9 @@ const AddBudgetItemForm = () => {
       addBudgetItem({
         token: token,
         categoryId: +fields[3].value,
-        name: fields[1].value,
+        name: fields[1].value.toString(),
         value: +fields[2].value,
-        userDate: fields[4].value
+        userDate: fields[4].value.toString()
       })
     )
 
