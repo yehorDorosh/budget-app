@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from '../../../hooks/useReduxTS'
 import BaseCard from '../../ui/BaseCard'
 import { getStatistics } from '../../../store/budget/budget-item-actions'
 import { StatisticsPayload } from '../../../types/api'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, ScrollView } from 'react-native'
 
 const BudgetResult = () => {
   const dispatch = useAppDispatch()
@@ -47,20 +47,20 @@ const BudgetResult = () => {
           <Text style={styles.tableTitle}>Summary</Text>
           <View style={styles.table}>
             <View style={styles.row}>
-              <Text>Category</Text>
-              <Text>Value</Text>
+              <Text style={[styles.text, styles.th]}>Category</Text>
+              <Text style={[styles.text, styles.th]}>Value</Text>
             </View>
             <View style={styles.row}>
-              <Text>Income</Text>
-              <Text>{statistics.incomes}</Text>
+              <Text style={styles.text}>Income</Text>
+              <Text style={styles.text}>{statistics.incomes}</Text>
             </View>
             <View style={styles.row}>
-              <Text>Expenses</Text>
-              <Text>{statistics.expenses}</Text>
+              <Text style={styles.text}>Expenses</Text>
+              <Text style={styles.text}>{statistics.expenses}</Text>
             </View>
             <View style={styles.row}>
-              <Text>Total</Text>
-              <Text>{statistics.sum}</Text>
+              <Text style={styles.text}>Total</Text>
+              <Text style={styles.text}>{statistics.sum}</Text>
             </View>
           </View>
         </View>
@@ -68,18 +68,22 @@ const BudgetResult = () => {
           <Text style={styles.tableTitle}>Most Expenses</Text>
           <View style={styles.table}>
             <View style={styles.row}>
-              <Text>Name</Text>
-              <Text>Value</Text>
+              <Text style={[styles.text, styles.th]}>Name</Text>
+              <Text style={[styles.text, styles.th]}>Value</Text>
             </View>
 
-            {statistics.categoriesRates.map((category) => {
-              return (
-                <View key={category.name} style={styles.row}>
-                  <Text>{category.name}</Text>
-                  <Text>{category.sum}</Text>
-                </View>
-              )
-            })}
+            <ScrollView>
+              {statistics.categoriesRates.map((category, i) => {
+                return (
+                  <View key={category.name} style={styles.row}>
+                    <Text style={[styles.text, styles.label]}>
+                      {i + 1} {category.name}
+                    </Text>
+                    <Text style={styles.text}>{category.sum}</Text>
+                  </View>
+                )
+              })}
+            </ScrollView>
           </View>
         </View>
       </View>
@@ -88,26 +92,30 @@ const BudgetResult = () => {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
+  container: {},
   summary: {
-    width: '48%'
+    marginBottom: 22
   },
-  byCategories: {
-    width: '48%'
-  },
+  byCategories: {},
   tableTitle: {
     fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center'
+  },
+  th: {
+    fontWeight: 'bold'
   },
   table: {},
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderBottomWidth: 1
+  },
+  text: {
+    fontSize: 18
+  },
+  label: {
+    maxWidth: '60%'
   }
 })
 
