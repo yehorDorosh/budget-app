@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import ShadowStyles from '../../styles/ShadowStyles'
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   onPress: () => void
   mode?: 'link' | 'button' | 'smallBtn'
   active?: boolean
-  style?: {}[]
+  style?: StyleProp<ViewStyle>[]
 }
 
 const BaseButton: FC<Props> = ({ children, onPress, mode = 'button', active = false, style = [] }) => {

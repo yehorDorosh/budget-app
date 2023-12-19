@@ -7,8 +7,9 @@ import { NavigationProp } from '@react-navigation/native'
 import HeaderRight from '../components/layout/header/HeaderRight'
 import BaseModal from '../components/ui/BaseModal'
 import FilterBudgeForm from '../components/budget/FilterBudgeForm/FilterBudgetListForm'
+import { BudgetListScreenNavigationProp } from '../types/navigation'
 
-const BudgetListScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
+const BudgetListScreen = ({ navigation }: { navigation: NavigationProp<BudgetListScreenNavigationProp> }) => {
   const token = useRouteGuard()!
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
 

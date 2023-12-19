@@ -2,16 +2,19 @@ import { FC } from 'react'
 import { View, StyleSheet } from 'react-native'
 import FilterButton from './FilterButton'
 import LogOutButton from './LogOutButton'
+import CalcButton from './CalcButton'
 
 interface Props {
   tintColor?: string
-  onFilterPress: () => void
+  onFilterPress?: () => void
+  onCalcPress?: () => void
 }
 
-const HeaderRight: FC<Props> = ({ onFilterPress, tintColor }) => {
+const HeaderRight: FC<Props> = ({ onCalcPress, onFilterPress, tintColor }) => {
   return (
     <View style={styles.container}>
-      <FilterButton tintColor={tintColor} onPress={onFilterPress} />
+      {onCalcPress && <CalcButton tintColor={tintColor} onPress={onCalcPress} />}
+      {onFilterPress && <FilterButton tintColor={tintColor} onPress={onFilterPress} />}
       <LogOutButton tintColor={tintColor} />
     </View>
   )

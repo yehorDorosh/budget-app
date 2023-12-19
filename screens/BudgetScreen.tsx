@@ -7,8 +7,9 @@ import HeaderRight from '../components/layout/header/HeaderRight'
 import BaseModal from '../components/ui/BaseModal'
 import FilterBudgeForm from '../components/budget/FilterBudgeForm/FilterBudgetListForm'
 import BudgetResult from '../components/budget/BudgetResult/BudgetResult'
+import { BudgetScreenNavigationProp } from '../types/navigation'
 
-const BudgetScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
+const BudgetScreen = ({ navigation }: { navigation: NavigationProp<BudgetScreenNavigationProp> }) => {
   const token = useRouteGuard()!
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false)
 
