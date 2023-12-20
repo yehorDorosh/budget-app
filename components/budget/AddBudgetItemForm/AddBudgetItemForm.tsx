@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from 'react'
+import { FC, Fragment, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import Form from '../../Form/Form'
 import { notEmptyValidator } from '../../../utils/validators'
@@ -10,6 +10,7 @@ import { CategoryType } from '../../../types/enums'
 import useCategoryFilter from '../../../hooks/useCategoryFilter'
 import BaseModal from '../../ui/BaseModal'
 import PriceCalculator from '../../PriceCalculator/PriceCalculator'
+import { searchNames } from '../../../store/budget/budget-item-actions'
 
 interface Props {
   openCalc: boolean
@@ -20,6 +21,8 @@ const AddBudgetItemForm: FC<Props> = ({ openCalc, closeCalc }) => {
   const dispatch = useAppDispatch()
   const { token, categoryType, setCategoryType, defaultCategoryType, filteredCategories } = useCategoryFilter()
   const [calcValue, setCalcValue] = useState<number | undefined>()
+  const [namesList, setNamesList] = useState<string[]>([])
+  const [nameInputValue, setNameInputValue] = useState<string>('')
 
   const onPressEqualHandler = (result: number) => {
     setCalcValue(result)
@@ -41,11 +44,38 @@ const AddBudgetItemForm: FC<Props> = ({ openCalc, closeCalc }) => {
   }
 
   const formChangeHandler = (fields: FieldState[]) => {
-    const value = fields[0].value
-    if (value !== categoryType) {
-      setCategoryType(value as CategoryType)
+    const formCategoryType = fields[0].value
+    const formName = fields[1].value
+
+    if (formCategoryType !== categoryType) {
+      setCategoryType(formCategoryType as CategoryType)
+    }
+
+    if (formName !== nameInputValue) {
+      setNameInputValue(formName.toString())
     }
   }
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+
+    const getDataList = async () => {
+      if (!nameInputValue) return
+
+      timer = setTimeout(async () => {
+        const res = await dispatch(searchNames({ token: token, name: nameInputValue }))
+        if (res.data.payload) {
+          setNamesList(res.data.payload)
+        }
+      }, 200)
+    }
+
+    getDataList()
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [nameInputValue])
 
   return (
     <Fragment>
@@ -66,11 +96,12 @@ const AddBudgetItemForm: FC<Props> = ({ openCalc, closeCalc }) => {
             defaultValue: defaultCategoryType ? defaultCategoryType : CategoryType.EXPENSE
           },
           {
-            type: 'text',
+            type: 'autocomplete',
             id: 'name',
             label: 'Name',
             errMsg: 'Name should be valid',
-            validator: notEmptyValidator
+            validator: notEmptyValidator,
+            dataList: nameInputValue ? namesList : []
           },
           {
             type: 'text',

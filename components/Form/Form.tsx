@@ -1,4 +1,4 @@
-import { FC, useReducer, Reducer, useEffect, useRef, useCallback } from 'react'
+import { FC, useReducer, Reducer, useEffect, useRef, useCallback, useState } from 'react'
 import { View, Text, StyleSheet, TextInputProps, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView } from 'react-native'
 import BaseInput from '../ui/BaseInput'
 import BaseButton from '../ui/BaseButton'
@@ -6,6 +6,7 @@ import BaseCard from '../ui/BaseCard'
 import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { arraysAreEqual, objectAreEqual } from '../../utils/comparator'
+import AutocompleteInput from '../ui/AutocompleteInput'
 
 export interface FieldState {
   value: string | boolean
@@ -22,7 +23,7 @@ interface FormState {
 }
 
 interface FieldConfig {
-  type: 'text' | 'select' | 'date' | 'radio' | 'checkbox'
+  type: 'text' | 'select' | 'date' | 'radio' | 'checkbox' | 'autocomplete'
   id: string
   label?: string
   defaultValue?: string | boolean
@@ -33,6 +34,7 @@ interface FieldConfig {
   selectItems?: { label: string; value: string }[]
   notClearable?: boolean
   value?: string | boolean
+  dataList?: string[]
 }
 
 interface FormConfig {
@@ -155,6 +157,7 @@ const reducerForm: Reducer<FormState, FormAction> = (state, action) => {
 const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   const prevFieldsConfig = useRef(fieldsConfig) // use to get previous fieldsConfig for useEffect
   const defaultFields: FieldState[] = setupFields(fieldsConfig)
+  const [enableScroll, setEnableScroll] = useState(true)
 
   const [fields, dispatchFields] = useReducer(reducerFields, defaultFields)
   const [form, dispatchForm] = useReducer(reducerForm, {
@@ -246,8 +249,8 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
   }, [...fieldsConfig.map((field) => field.value)])
 
   return (
-    <ScrollView>
-      <KeyboardAvoidingView behavior="position">
+    <ScrollView keyboardShouldPersistTaps="handled" scrollEnabled={enableScroll}>
+      <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={-200}>
         <BaseCard style={styles.form}>
           {form.isLoading && (
             <View style={styles.overlay}>
@@ -299,6 +302,22 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                         inputHandler(fieldsConfig[i].id, fieldsConfig[i].selectItems![event.nativeEvent.selectedSegmentIndex].value)
                     }}
                     style={{ marginBottom: 8 }}
+                  />
+                )
+              case 'autocomplete':
+                if (typeof field.value === 'boolean') return null
+                return (
+                  <AutocompleteInput
+                    key={fieldsConfig[i].id}
+                    label={fieldsConfig[i].label}
+                    isValid={field.isValid}
+                    errMsg={fieldsConfig[i].errMsg}
+                    value={field.value}
+                    dataList={fieldsConfig[i].dataList ?? []}
+                    onDataListItemPress={inputHandler.bind(null, fieldsConfig[i].id)}
+                    onChangeText={inputHandler.bind(null, fieldsConfig[i].id)}
+                    scrollSwitch={(value) => setEnableScroll(value)}
+                    {...fieldsConfig[i].attrs}
                   />
                 )
               default:

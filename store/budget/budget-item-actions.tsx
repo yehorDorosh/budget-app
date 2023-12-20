@@ -120,3 +120,16 @@ export const getMonthlyTrend = ({ token, year }: { year: string; token: string }
     }
   }
 }
+
+export const searchNames = ({ token, name }: { token: string; name: string }) => {
+  return async (dispatch: AppDispatch, getState: () => RootState) => {
+    try {
+      const { data, status } = await axios.get<ApiRes<string[]>>(`${api}/api/budget/search-names?name=${name}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      return { data, status }
+    } catch (err) {
+      return actionErrorHandler(err)
+    }
+  }
+}

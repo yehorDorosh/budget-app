@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState } from 'react'
+import React, { FC, Fragment, useState, useEffect } from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
@@ -10,7 +10,7 @@ interface Props extends React.ComponentProps<typeof TextInput> {
   label?: string
   value?: string
   errMsg?: string
-  type?: 'text' | 'select' | 'date' | 'radio' | 'checkbox'
+  type?: 'text' | 'select' | 'date' | 'radio' | 'checkbox' | 'autocomplete'
   onChangeText?: (text: string) => void
   onChangeSelect?: (value: string, index: number) => void
   onChangeCheckbox?: (value: boolean) => void
@@ -40,7 +40,9 @@ const BaseInput: FC<Props> = ({
   return (
     <View style={styles.field}>
       {label && type !== 'checkbox' && <Text style={styles.label}>{label}</Text>}
+
       {type === 'text' && <TextInput style={styles.input} value={value} onChangeText={onChangeText} {...props} />}
+
       {type === 'select' && (
         <View style={styles.select}>
           <Picker selectedValue={value} onValueChange={onChangeSelect} mode="dropdown">
@@ -49,6 +51,7 @@ const BaseInput: FC<Props> = ({
           </Picker>
         </View>
       )}
+
       {type === 'date' && (
         <Fragment>
           <TextInput style={styles.input} value={value} onChangeText={onChangeText} onPressIn={() => setShowDatePicker(true)} {...props} />
@@ -67,6 +70,7 @@ const BaseInput: FC<Props> = ({
           )}
         </Fragment>
       )}
+
       {type === 'checkbox' && (
         <View style={styles.checkboxContainer}>
           <View style={styles.checkboxSection}>
@@ -77,6 +81,7 @@ const BaseInput: FC<Props> = ({
           </View>
         </View>
       )}
+
       {!isValid && errMsg && <Text style={styles.errMsg}>{errMsg}</Text>}
     </View>
   )
