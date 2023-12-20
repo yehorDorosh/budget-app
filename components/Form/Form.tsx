@@ -10,6 +10,7 @@ import AutocompleteInput from '../ui/AutocompleteInput'
 import SelectInput from '../ui/SelectInput'
 import CheckboxInput from '../ui/CheckboxInput'
 import DateInput from '../ui/DateInput'
+import Colors from '../../styles/Colors'
 
 export interface FieldState {
   value: string | boolean
@@ -300,6 +301,10 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                         inputHandler(fieldsConfig[i].id, fieldsConfig[i].selectItems![event.nativeEvent.selectedSegmentIndex].value)
                     }}
                     style={{ marginBottom: 8 }}
+                    tintColor={Colors.segmentControl.activeBg}
+                    backgroundColor={Colors.segmentControl.bg}
+                    fontStyle={{ color: Colors.segmentControl.text }}
+                    activeFontStyle={{ color: Colors.segmentControl.activeText }}
                   />
                 )
               case 'autocomplete':

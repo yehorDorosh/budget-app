@@ -4,6 +4,7 @@ import BaseCard from '../../ui/BaseCard'
 import { getStatistics } from '../../../store/budget/budget-item-actions'
 import { StatisticsPayload } from '../../../types/api'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import Colors from '../../../styles/Colors'
 
 const BudgetResult = () => {
   const dispatch = useAppDispatch()
@@ -38,41 +39,42 @@ const BudgetResult = () => {
     }
   }, [filters.name])
 
+  const isProfit = statistics?.incomes && statistics?.expenses && statistics.incomes > statistics.expenses
+
   if (!statistics) return null
 
   return (
-    <BaseCard>
-      <View style={styles.container}>
-        <View style={styles.summary}>
-          <Text style={styles.tableTitle}>Summary</Text>
-          <View style={styles.table}>
-            <View style={styles.row}>
-              <Text style={[styles.text, styles.th]}>Category</Text>
-              <Text style={[styles.text, styles.th]}>Value</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.text}>Income</Text>
-              <Text style={styles.text}>{statistics.incomes}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.text}>Expenses</Text>
-              <Text style={styles.text}>{statistics.expenses}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.text}>Total</Text>
-              <Text style={styles.text}>{statistics.sum}</Text>
+    <ScrollView>
+      <BaseCard>
+        <View style={styles.container}>
+          <View style={styles.summary}>
+            <Text style={styles.tableTitle}>Summary</Text>
+            <View style={styles.table}>
+              <View style={styles.row}>
+                <Text style={[styles.text, styles.th]}>Category</Text>
+                <Text style={[styles.text, styles.th]}>Value</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.text, styles.income]}>Income</Text>
+                <Text style={[styles.text, styles.income]}>{statistics.incomes}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.text, styles.expense]}>Expenses</Text>
+                <Text style={[styles.text, styles.expense]}>{statistics.expenses}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={[styles.text, isProfit ? styles.income : styles.expense]}>Total</Text>
+                <Text style={[styles.text, isProfit ? styles.income : styles.expense]}>{statistics.sum}</Text>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={styles.byCategories}>
-          <Text style={styles.tableTitle}>Most Expenses</Text>
-          <View style={styles.table}>
-            <View style={styles.row}>
-              <Text style={[styles.text, styles.th]}>Name</Text>
-              <Text style={[styles.text, styles.th]}>Value</Text>
-            </View>
-
-            <ScrollView>
+          <View style={styles.byCategories}>
+            <Text style={styles.tableTitle}>Most Expenses</Text>
+            <View style={styles.table}>
+              <View style={styles.row}>
+                <Text style={[styles.text, styles.th]}>Name</Text>
+                <Text style={[styles.text, styles.th]}>Value</Text>
+              </View>
               {statistics.categoriesRates.map((category, i) => {
                 return (
                   <View key={category.name} style={styles.row}>
@@ -83,11 +85,11 @@ const BudgetResult = () => {
                   </View>
                 )
               })}
-            </ScrollView>
+            </View>
           </View>
         </View>
-      </View>
-    </BaseCard>
+      </BaseCard>
+    </ScrollView>
   )
 }
 
@@ -116,6 +118,12 @@ const styles = StyleSheet.create({
   },
   label: {
     maxWidth: '60%'
+  },
+  income: {
+    color: Colors.income
+  },
+  expense: {
+    color: Colors.expense
   }
 })
 

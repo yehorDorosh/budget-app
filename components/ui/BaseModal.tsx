@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal } from 'react-native'
 import IconButton from './IconButton'
 import BaseCard from './BaseCard'
 import BaseButton from './BaseButton'
+import Colors from '../../styles/Colors'
 
 interface Props {
   children: React.ReactNode
@@ -27,11 +28,15 @@ const BaseModal: FC<Props> = ({ children, open, onClose, title, footer }) => {
       <BaseCard style={styles.modal}>
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
-          <IconButton icon="close-circle" color="black" onPress={onClose} />
+          <IconButton icon="close-circle" color={Colors.btn.bg} onPress={onClose} />
         </View>
         <View style={styles.container}>{children}</View>
         <View style={styles.footer}>
-          {footer?.reject && <BaseButton onPress={footer.reject.onClick}>{footer.reject.text}</BaseButton>}
+          {footer?.reject && (
+            <BaseButton style={[styles.cancelBtn]} onPress={footer.reject.onClick}>
+              {footer.reject.text}
+            </BaseButton>
+          )}
           {footer?.accept && (
             <BaseButton style={[{ marginLeft: 8 }]} onPress={footer.accept.onClick}>
               {footer.accept.text}
@@ -64,6 +69,9 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'flex-end'
+  },
+  cancelBtn: {
+    backgroundColor: Colors.danger
   }
 })
 

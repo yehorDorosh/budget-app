@@ -2,6 +2,7 @@ import { useEffect, useState, FC } from 'react'
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable } from 'react-native'
 import uuid from 'react-native-uuid'
 import InputStyles from '../../styles/InputStyles'
+import Colors from '../../styles/Colors'
 
 interface Props {
   isValid: boolean
@@ -86,13 +87,18 @@ const styles = StyleSheet.create({
     top: '90%',
     left: 0,
     right: 0,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderColor: Colors.input.border,
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: Colors.autocompleteInput.bg,
     maxHeight: 200
   },
   autocompleteItem: {
-    paddingVertical: 8
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderColor: Colors.autocompleteInput.border
   },
   hidden: {
     display: 'none'

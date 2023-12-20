@@ -3,12 +3,12 @@ import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { getMonthlyTrend } from '../../../store/budget/budget-item-actions'
 import { Months } from '../../../types/enums'
-import BaseCard from '../../ui/BaseCard'
 import { MonthlyTrendPayload } from '../../../types/api'
 import Form from '../../Form/Form'
 import { FieldState } from '../../Form/Form'
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native'
 import BaseButton from '../../ui/BaseButton'
+import Colors from '../../../styles/Colors'
 
 interface Props {
   token: string
@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.03
   },
   expense: {
-    color: 'red'
+    color: Colors.expense
   },
   income: {
-    color: 'blue'
+    color: Colors.income
   },
   columnTrend: {
     position: 'relative',
@@ -181,11 +181,11 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   expenseTrend: {
-    backgroundColor: 'red',
+    backgroundColor: Colors.expense,
     right: '50%'
   },
   incomesTrend: {
-    backgroundColor: 'blue',
+    backgroundColor: Colors.income,
     left: '50%'
   },
   averageExpenses: {

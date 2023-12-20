@@ -4,6 +4,7 @@ export enum ColorsCodes {
   black = '#000',
   red = '#dc3545',
   lightGrey = '#ced4da',
+  moreLightGrey = '#e9ecef',
   grey = '#6c757d',
   lightOrange = '#f8d7da',
   lightRed = '#f5c2c7',
@@ -13,6 +14,10 @@ export enum ColorsCodes {
 const Colors = {
   error: ColorsCodes.red,
   danger: ColorsCodes.red,
+  ico: ColorsCodes.primary,
+  font: ColorsCodes.black,
+  income: ColorsCodes.primary,
+  expense: ColorsCodes.red,
   card: {
     bg: ColorsCodes.white,
     border: ColorsCodes.grey
@@ -26,14 +31,22 @@ const Colors = {
   },
   input: {
     border: ColorsCodes.grey,
-    bg: ColorsCodes.lightGrey
+    bg: ColorsCodes.moreLightGrey
   },
-  ico: ColorsCodes.primary,
-  font: ColorsCodes.black,
   budgetCard: {
     expense: ColorsCodes.lightOrange,
     income: ColorsCodes.lightGreen,
     ignored: ColorsCodes.lightGrey
+  },
+  segmentControl: {
+    bg: ColorsCodes.lightGrey,
+    text: ColorsCodes.black,
+    activeText: ColorsCodes.white,
+    activeBg: ColorsCodes.primary
+  },
+  autocompleteInput: {
+    bg: ColorsCodes.white,
+    border: ColorsCodes.lightGrey
   }
 }
 

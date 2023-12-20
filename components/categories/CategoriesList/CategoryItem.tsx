@@ -8,6 +8,7 @@ import { CategoryType } from '../../../types/enums'
 import BaseCard from '../../ui/BaseCard'
 import BaseButton from '../../ui/BaseButton'
 import LoaderOverlay from '../../utils/LoaderOverlay'
+import Colors from '../../../styles/Colors'
 
 interface Props {
   id: number
@@ -60,7 +61,7 @@ const ListItem: FC<Props> = ({ id, value, categoryType, token }) => {
         <Text>Are you sure you want to delete this category?</Text>
         <Text>All budget items in this category also will be deleted!</Text>
       </BaseModal>
-      <BaseCard style={styles.card}>
+      <BaseCard style={[styles.card, categoryType === CategoryType.EXPENSE ? styles.expense : styles.income]}>
         <View style={styles.item}>
           <Text>{value}</Text>
           <Text>{categoryType}</Text>
@@ -68,7 +69,7 @@ const ListItem: FC<Props> = ({ id, value, categoryType, token }) => {
             <BaseButton style={[{ marginRight: 8 }]} mode="smallBtn" onPress={editBtnHandler}>
               Edit
             </BaseButton>
-            <BaseButton mode="smallBtn" onPress={() => setOpenDeleteModal(true)}>
+            <BaseButton style={[styles.deleteBtn]} mode="smallBtn" onPress={() => setOpenDeleteModal(true)}>
               Delete
             </BaseButton>
           </View>
@@ -98,6 +99,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1
+  },
+  deleteBtn: {
+    backgroundColor: Colors.danger
+  },
+  income: {
+    backgroundColor: Colors.budgetCard.income
+  },
+  expense: {
+    backgroundColor: Colors.budgetCard.expense
   }
 })
 
