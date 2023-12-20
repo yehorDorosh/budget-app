@@ -9,6 +9,7 @@ import BaseCard from '../../ui/BaseCard'
 import BaseButton from '../../ui/BaseButton'
 import BaseModal from '../../ui/BaseModal'
 import LoaderOverlay from '../../utils/LoaderOverlay'
+import Colors from '../../../styles/Colors'
 
 interface Props {
   token: string
@@ -46,7 +47,12 @@ const ListItem: FC<Props> = ({ budgetItem, token, onChange, onDelete }) => {
       <BaseModal open={openForm} onClose={() => setOpenForm(false)} title="Edit">
         <UpdateBudgetItemForm token={token} currentBudgetItem={budgetItem} onSave={onEditHandler} />
       </BaseModal>
-      <BaseCard style={styles.card}>
+      <BaseCard
+        style={[
+          styles.card,
+          budgetItem.ignore ? styles.ignored : budgetItem.category.categoryType === CategoryType.EXPENSE ? styles.expense : styles.income
+        ]}
+      >
         {isLoading && <LoaderOverlay style={styles.overlay} />}
         <View style={styles.container}>
           <Text style={styles.title}>{budgetItem.name}</Text>
@@ -60,7 +66,7 @@ const ListItem: FC<Props> = ({ budgetItem, token, onChange, onDelete }) => {
             <BaseButton mode="smallBtn" style={[styles.btn]} onPress={editBtnHandler}>
               Edit
             </BaseButton>
-            <BaseButton mode="smallBtn" style={[styles.btn]} onPress={deleteHandler}>
+            <BaseButton mode="smallBtn" style={[styles.btn, styles.delete]} onPress={deleteHandler}>
               Delete
             </BaseButton>
           </View>
@@ -101,12 +107,24 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     minWidth: '50%'
   },
+  delete: {
+    backgroundColor: Colors.danger
+  },
   overlay: {
     position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0
+  },
+  expense: {
+    backgroundColor: Colors.budgetCard.expense
+  },
+  income: {
+    backgroundColor: Colors.budgetCard.income
+  },
+  ignored: {
+    backgroundColor: Colors.budgetCard.ignored
   }
 })
 

@@ -4,11 +4,15 @@ export enum ColorsCodes {
   black = '#000',
   red = '#dc3545',
   lightGrey = '#ced4da',
-  grey = '#6c757d'
+  grey = '#6c757d',
+  lightOrange = '#f8d7da',
+  lightRed = '#f5c2c7',
+  lightGreen = '#d4edda'
 }
 
 const Colors = {
   error: ColorsCodes.red,
+  danger: ColorsCodes.red,
   card: {
     bg: ColorsCodes.white,
     border: ColorsCodes.grey
@@ -25,7 +29,12 @@ const Colors = {
     bg: ColorsCodes.lightGrey
   },
   ico: ColorsCodes.primary,
-  font: ColorsCodes.black
+  font: ColorsCodes.black,
+  budgetCard: {
+    expense: ColorsCodes.lightOrange,
+    income: ColorsCodes.lightGreen,
+    ignored: ColorsCodes.lightGrey
+  }
 }
 
 export default Colors
