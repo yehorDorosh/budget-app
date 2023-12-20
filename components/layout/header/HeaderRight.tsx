@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import FilterButton from './FilterButton'
 import LogOutButton from './LogOutButton'
 import CalcButton from './CalcButton'
+import { useAppSelector } from '../../../hooks/useReduxTS'
 
 interface Props {
   tintColor?: string
@@ -11,6 +12,10 @@ interface Props {
 }
 
 const HeaderRight: FC<Props> = ({ onCalcPress, onFilterPress, tintColor }) => {
+  const isLogin = !!useAppSelector((state) => state.user.token)
+
+  if (!isLogin) return null
+
   return (
     <View style={styles.container}>
       {onCalcPress && <CalcButton tintColor={tintColor} onPress={onCalcPress} />}
