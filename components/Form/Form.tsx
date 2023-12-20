@@ -7,6 +7,9 @@ import { ValidationError } from '../../types/api'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { arraysAreEqual, objectAreEqual } from '../../utils/comparator'
 import AutocompleteInput from '../ui/AutocompleteInput'
+import SelectInput from '../ui/SelectInput'
+import CheckboxInput from '../ui/CheckboxInput'
+import DateInput from '../ui/DateInput'
 
 export interface FieldState {
   value: string | boolean
@@ -264,31 +267,26 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
               case 'select':
                 if (typeof field.value === 'boolean') return null
                 return (
-                  <BaseInput
-                    type="select"
-                    selectItems={fieldsConfig[i].selectItems}
+                  <SelectInput
+                    selectItems={fieldsConfig[i].selectItems ?? []}
                     key={fieldsConfig[i].id}
                     label={fieldsConfig[i].label}
                     isValid={field.isValid}
                     errMsg={fieldsConfig[i].errMsg}
                     value={field.value}
                     onChangeSelect={selectHandler.bind(null, fieldsConfig[i].id)}
-                    {...fieldsConfig[i].attrs}
                   />
                 )
               case 'checkbox':
                 if (field.value === undefined) return null
                 return (
-                  <BaseInput
-                    type="checkbox"
-                    selectItems={fieldsConfig[i].selectItems}
+                  <CheckboxInput
                     key={fieldsConfig[i].id}
                     label={fieldsConfig[i].label}
                     isValid={field.isValid}
                     errMsg={fieldsConfig[i].errMsg}
                     isChecked={field.value as unknown as boolean}
                     onChangeCheckbox={checkboxHandler.bind(null, fieldsConfig[i].id)}
-                    {...fieldsConfig[i].attrs}
                   />
                 )
               case 'radio':
@@ -320,11 +318,23 @@ const Form: FC<Props> = ({ fieldsConfig, formConfig }) => {
                     {...fieldsConfig[i].attrs}
                   />
                 )
+              case 'date':
+                if (typeof field.value === 'boolean') return null
+                return (
+                  <DateInput
+                    key={fieldsConfig[i].id}
+                    label={fieldsConfig[i].label}
+                    isValid={field.isValid}
+                    errMsg={fieldsConfig[i].errMsg}
+                    value={field.value}
+                    onChangeText={inputHandler.bind(null, fieldsConfig[i].id)}
+                    {...fieldsConfig[i].attrs}
+                  />
+                )
               default:
                 if (typeof field.value === 'boolean') return null
                 return (
                   <BaseInput
-                    type={fieldsConfig[i].type}
                     key={fieldsConfig[i].id}
                     label={fieldsConfig[i].label}
                     isValid={field.isValid}

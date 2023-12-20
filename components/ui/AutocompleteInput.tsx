@@ -1,6 +1,7 @@
 import { useEffect, useState, FC } from 'react'
 import { View, Text, TextInput, ScrollView, StyleSheet, Pressable } from 'react-native'
 import uuid from 'react-native-uuid'
+import InputStyles from '../../styles/InputStyles'
 
 interface Props {
   isValid: boolean
@@ -75,23 +76,7 @@ const AutocompleteInput: FC<Props> = ({
 }
 
 const styles = StyleSheet.create({
-  field: {
-    marginBottom: 16
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-  input: {
-    padding: 16,
-    borderWidth: 2,
-    borderRadius: 8,
-    fontSize: 24,
-    lineHeight: 32
-  },
-  errMsg: {
-    color: 'red'
-  },
+  ...InputStyles,
   autocompleteContainer: {
     position: 'relative'
   },
