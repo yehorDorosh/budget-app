@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import InputStyles from '../../styles/InputStyles'
+import Colors from '../../styles/Colors'
 
 interface Props {
   isValid: boolean
@@ -33,8 +34,10 @@ const styles = StyleSheet.create({
   ...InputStyles,
   select: {
     paddingVertical: 8,
-    borderWidth: 2,
-    borderRadius: 8
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: Colors.input.border,
+    backgroundColor: Colors.input.bg
   }
 })
 

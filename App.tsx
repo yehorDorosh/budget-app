@@ -17,6 +17,7 @@ import BudgetListScreen from './screens/BudgetListScreen'
 import Categories from './screens/Categories'
 import BudgetScreen from './screens/BudgetScreen'
 import MonthlyTrendScreen from './screens/MonthlyTrendScreen'
+import Colors from './styles/Colors'
 
 if (!global.btoa) {
   global.btoa = encode
@@ -35,7 +36,9 @@ const DrawerNavigation = () => {
   return (
     <Drawer.Navigator
       screenOptions={{
-        headerRight: ({ tintColor }) => <LogOutButton tintColor={tintColor} />
+        headerRight: ({ tintColor }) => <LogOutButton tintColor={tintColor ?? Colors.ico} />,
+        headerTintColor: Colors.ico,
+        headerTitleStyle: { color: Colors.font }
       }}
     >
       <Drawer.Screen

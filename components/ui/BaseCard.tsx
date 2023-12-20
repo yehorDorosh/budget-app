@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { View, StyleSheet } from 'react-native'
-import ShadowStyles from '../../styles/ShadowStyles'
+import Colors from '../../styles/Colors'
 
 interface Props {
   children: React.ReactNode
@@ -15,7 +15,9 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderWidth: 1,
-    borderRadius: 8
+    borderRadius: 8,
+    backgroundColor: Colors.card.bg,
+    borderColor: Colors.card.border
   }
 })
 

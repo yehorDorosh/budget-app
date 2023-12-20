@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import { Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import ShadowStyles from '../../styles/ShadowStyles'
+import Colors from '../../styles/Colors'
 
 interface Props {
   children: React.ReactNode
@@ -44,14 +45,14 @@ const styles = StyleSheet.create({
     ...ShadowStyles.shadow,
     borderRadius: 8,
     padding: 16,
-    backgroundColor: '#000'
+    backgroundColor: Colors.btn.bg
   },
   link: {},
   smallBtn: {
     ...ShadowStyles.shadow,
     padding: 8,
     borderRadius: 8,
-    backgroundColor: '#000'
+    backgroundColor: Colors.btn.bg
   },
   pressed: {
     opacity: 0.7
@@ -62,24 +63,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   labelButton: {
-    color: '#fff'
+    color: Colors.btn.text
   },
   labelLink: {
-    color: '#000'
+    color: Colors.btn.bg
   },
   labelSmallBtn: {
     fontSize: 18,
-    color: '#fff'
+    color: Colors.btn.text
   },
   activeLink: {
     textDecorationLine: 'underline'
   },
   activeButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.btn.activeBg,
     borderWidth: 1,
-    borderColor: '#000'
+    borderColor: Colors.btn.activeBorder
   },
   activeText: {
-    color: '#000'
+    color: Colors.btn.activeText
   }
 })

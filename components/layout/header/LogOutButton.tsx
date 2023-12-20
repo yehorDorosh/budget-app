@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks/useReduxTS'
 import { userActions } from '../../../store/user/user-slice'
 import { useNavigation } from '@react-navigation/native'
 import { HomeScreenNavigationProp } from '../../../types/navigation'
+import Colors from '../../../styles/Colors'
 
 interface Props {
   tintColor?: string
@@ -22,7 +23,7 @@ const LogOutButton: FC<Props> = ({ tintColor }) => {
 
   if (!user.token) return null
 
-  return <IconButton style={styles.button} icon="log-out" color={tintColor ? tintColor : 'black'} size={28} onPress={logOutHandler} />
+  return <IconButton style={styles.button} icon="log-out" color={tintColor ? tintColor : Colors.ico} size={28} onPress={logOutHandler} />
 }
 
 const styles = StyleSheet.create({

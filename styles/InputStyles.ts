@@ -1,4 +1,5 @@
 import { ViewStyle, TextStyle, StyleSheet } from 'react-native'
+import Colors from './Colors'
 
 interface InputStylesType {
   field: ViewStyle
@@ -17,13 +18,15 @@ const styles: InputStylesType = {
   },
   input: {
     padding: 16,
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 8,
     fontSize: 24,
-    lineHeight: 32
+    lineHeight: 32,
+    borderColor: Colors.input.border,
+    backgroundColor: Colors.input.bg
   },
   errMsg: {
-    color: 'red'
+    color: Colors.error
   }
 }
 

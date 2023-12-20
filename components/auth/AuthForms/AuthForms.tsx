@@ -5,6 +5,7 @@ import BaseButton from '../../ui/BaseButton'
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { SendRestorePasswordEmailScreenNavigationProp } from '../../../types/navigation'
+import { ColorsCodes } from '../../../styles/Colors'
 
 const AuthForms = () => {
   const [activeForm, setActiveForm] = useState<'login' | 'signup'>('login')
@@ -23,10 +24,7 @@ const AuthForms = () => {
       </View>
       {activeForm === 'login' && <LoginForm />}
       {activeForm === 'signup' && <SignUpForm />}
-      <Text
-        style={{ textAlign: 'center', textDecorationLine: 'underline' }}
-        onPress={() => navigation.navigate('SendRestorePasswordEmail')}
-      >
+      <Text style={styles.link} onPress={() => navigation.navigate('SendRestorePasswordEmail')}>
         Forgot password?
       </Text>
     </View>
@@ -42,7 +40,8 @@ const styles = StyleSheet.create({
   slash: {
     textAlign: 'center',
     fontSize: 24
-  }
+  },
+  link: { textAlign: 'center', textDecorationLine: 'underline', color: ColorsCodes.grey }
 })
 
 export default AuthForms
