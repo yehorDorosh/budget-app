@@ -82,7 +82,7 @@ const reducerFields: Reducer<FieldState[], FieldsAction> = (state, action) => {
       const index = action.fieldsConfig.findIndex((field) => field.id === action.id)
       const validator = action.fieldsConfig[index].validator
       const field = state[index]
-      field.value = typeof action.value === 'string' ? action.value?.trim() : action.value
+      field.value = typeof action.value === 'string' ? action.value : action.value
       field.isTouched = true
       const matchValue = state.find((_, i) => action.fieldsConfig[i].id === action.fieldsConfig[index].matchValidatorConfig?.id)?.value
       field.isValid = validator ? validator(action.value.toString(), matchValue?.toString()) : true

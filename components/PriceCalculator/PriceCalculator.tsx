@@ -121,32 +121,31 @@ const PriceCalculator: FC<Props> = ({ onPressEqual }) => {
         <Text>Preview</Text>
         <Text style={styles.output}>{result}</Text>
         <View style={styles.btns}>
-          <CalculatorButton btnTxt="+/-" onClick={buttonHandler} style={styles.bgGray} />
-          <CalculatorButton btnTxt="c" onClick={buttonHandler} style={styles.bgGray} />
-          <CalculatorButton btnTxt="<-" onClick={buttonHandler} style={styles.bgGray} />
-          <CalculatorButton btnTxt="/" onClick={buttonHandler} style={styles.bgOrange} />
-          <CalculatorButton btnTxt="7" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="8" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="9" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="*" onClick={buttonHandler} style={styles.bgOrange} />
-          <CalculatorButton btnTxt="4" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="5" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="6" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="-" onClick={buttonHandler} style={styles.bgOrange} />
-          <CalculatorButton btnTxt="1" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="2" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="3" onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="+" onClick={buttonHandler} style={styles.bgOrange} />
-          <CalculatorButton btnTxt="0" onClick={buttonHandler} style={styles.zero} />
-          <CalculatorButton btnTxt="." onClick={buttonHandler} style={styles.bgBlue} />
-          <CalculatorButton btnTxt="=" onClick={resultHandler} style={styles.bgRed} />
+          <CalculatorButton btnTxt="+/-" onClick={buttonHandler} style={[styles.btn, styles.bgGray]} />
+          <CalculatorButton btnTxt="c" onClick={buttonHandler} style={[styles.btn, styles.bgGray]} />
+          <CalculatorButton btnTxt="<-" onClick={buttonHandler} style={[styles.btn, styles.bgGray]} />
+          <CalculatorButton btnTxt="/" onClick={buttonHandler} style={[styles.btn, styles.bgOrange]} />
+          <CalculatorButton btnTxt="7" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="8" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="9" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="*" onClick={buttonHandler} style={[styles.btn, styles.bgOrange]} />
+          <CalculatorButton btnTxt="4" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="5" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="6" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="-" onClick={buttonHandler} style={[styles.btn, styles.bgOrange]} />
+          <CalculatorButton btnTxt="1" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="2" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="3" onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="+" onClick={buttonHandler} style={[styles.btn, styles.bgOrange]} />
+          <CalculatorButton btnTxt="0" onClick={buttonHandler} style={[styles.btn, styles.zero]} />
+          <CalculatorButton btnTxt="." onClick={buttonHandler} style={[styles.btn, styles.bgBlue]} />
+          <CalculatorButton btnTxt="=" onClick={resultHandler} style={[styles.btn, styles.bgRed]} />
         </View>
       </View>
     </BaseCard>
   )
 }
 
-const gap = 8
 const btnWidth = '23%'
 
 const styles = StyleSheet.create({
@@ -162,8 +161,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: gap
+    flexWrap: 'wrap'
+  },
+  btn: {
+    margin: '1%'
   },
   zero: {
     backgroundColor: '#00f',
@@ -171,23 +172,23 @@ const styles = StyleSheet.create({
   },
   bgGray: {
     backgroundColor: '#ccc',
-    width: '23%'
+    width: btnWidth
   },
   bgRed: {
     backgroundColor: '#f00',
-    width: '23%'
+    width: btnWidth
   },
   bgOrange: {
     backgroundColor: '#f60',
-    width: '23%'
+    width: btnWidth
   },
   bgYellow: {
     backgroundColor: '#ff0',
-    width: '23%'
+    width: btnWidth
   },
   bgBlue: {
     backgroundColor: '#00f',
-    width: '23%'
+    width: btnWidth
   }
 })
 
